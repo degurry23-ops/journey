@@ -1,67 +1,61 @@
-// Journey Prototype — Supabase + AI Integration
-// Add <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script> before this
-
+// Journey Prototype — AI Integration (no CDN needed)
 const SUPABASE_URL = 'https://vddipatvlyvciolwabqh.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_4ogDVBGxhuJTZrRb0RtuPg_6e77MnA8';
-const sb = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── AI: Call Edge Function ──
+// ── AI: Call Edge Function directly via fetch ──
 async function aiPlanTrip(params) {
-  if (!sb) return null;
   try {
-    const { data, error } = await sb.functions.invoke('ai-plan-trip', { body: params });
-    if (error) throw error;
+    const res = await fetch(SUPABASE_URL + '/functions/v1/ai-plan-trip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify(params)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'AI request failed');
     return data;
   } catch(e) { console.warn('AI plan failed:', e.message); return null; }
 }
 
 async function aiJournal(tripData) {
-  if (!sb) return null;
   try {
-    const { data, error } = await sb.functions.invoke('ai-journal', { body: tripData });
-    if (error) throw error;
-    return data;
+    const res = await fetch(SUPABASE_URL + '/functions/v1/ai-journal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify(tripData)
+    });
+    return await res.json();
   } catch(e) { console.warn('AI journal failed:', e.message); return null; }
 }
 
-// ── DB: Save trip to Supabase ──
+// ── DB: Save trip ──
 async function saveTripToDB(trip) {
-  if (!sb) return null;
   try {
-    const { data, error } = await sb.from('trips').insert({
-      name: trip.name, destination: trip.destination,
-      start_date: trip.startDate, end_date: trip.endDate,
-      budget: trip.budget || 0, members_count: trip.members?.length || 1,
-      status: 'planning', readiness: 30
-    }).select().single();
-    if (error) throw error;
-
+    const res = await fetch(SUPABASE_URL + '/rest/v1/trips', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY, 'apikey': SUPABASE_KEY, 'Prefer': 'return=representation' },
+      body: JSON.stringify({ name: trip.name, destination: trip.destination, start_date: trip.startDate, end_date: trip.endDate, budget: trip.budget || 0, members_count: trip.members || 1, status: 'planning', readiness: 30 })
+    });
+    const data = await res.json();
+    if (!res.ok) { console.warn('DB save failed:', data); return null; }
+    const tripId = data[0]?.id;
     // Insert days + places
     for (let di = 0; di < trip.days.length; di++) {
       const d = trip.days[di];
-      const { data: dayData } = await sb.from('days').insert({
-        trip_id: data.id, day_number: di + 1, date: d.date,
-        weather: d.weather || '☀️ 晴 25°C', ai_tip: d.tip || ''
-      }).select().single();
-
-      if (dayData && d.places?.length) {
-        const placesToInsert = d.places.map((p, i) => ({
-          day_id: dayData.id, name: p.name,
-          category: p.cat || p.category || '景点',
-          time_slot: p.time || '09:00', duration: p.duration || '1h',
-          fee: p.fee || '免费', lat: p.lat || null, lng: p.lng || null,
-          sort_order: i
-        }));
-        await sb.from('places').insert(placesToInsert);
+      const dRes = await fetch(SUPABASE_URL + '/rest/v1/days', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY, 'apikey': SUPABASE_KEY, 'Prefer': 'return=representation' },
+        body: JSON.stringify({ trip_id: tripId, day_number: di + 1, date: d.date, weather: d.weather || '☀️ 晴 25°C', ai_tip: d.tip || '' })
+      });
+      const dayData = await dRes.json();
+      if (dayData[0]?.id && d.places?.length) {
+        const placesToInsert = d.places.map((p, i) => ({ day_id: dayData[0].id, name: p.name, category: p.cat || p.category || '景点', time_slot: p.time || '09:00', duration: p.duration || '1h', fee: p.fee || '免费', lat: p.lat || null, lng: p.lng || null, sort_order: i }));
+        await fetch(SUPABASE_URL + '/rest/v1/places', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY, 'apikey': SUPABASE_KEY },
+          body: JSON.stringify(placesToInsert)
+        });
       }
     }
-    return data;
+    return tripId;
   } catch(e) { console.warn('DB save failed:', e.message); return null; }
-}
-
-async function fetchTripsFromDB() {
-  if (!sb) return null;
-  const { data, error } = await sb.from('trips').select('*, days(*, places(*)), expenses(*)').order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
 }
