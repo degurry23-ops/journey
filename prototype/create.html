@@ -3,7 +3,9 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>AI 创建旅行 — Journey</title>
 <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="storage.js"></script>
+<script src="supabase-init.js"></script>
 <style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--accent-fg:#FFF;--border:#E2E8F0;--card:#FFF;--radius:12px;--radius-lg:16px;--radius-xl:24px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}.container{max-width:800px;margin:0 auto;padding:0 24px}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:12px 24px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease-out;text-decoration:none;min-height:48px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-fg);box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,82,255,.35)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--fg)}.btn-outline:hover{border-color:rgba(0,82,255,.3);background:var(--muted)}.btn-full{width:100%}.btn-lg{padding:16px 32px;font-size:17px;border-radius:var(--radius-lg)}.input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;font-size:16px;font-family:var(--font-body);color:var(--fg);outline:0;transition:border-color .2s}.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,82,255,.1)}.input::placeholder{color:var(--muted-fg)}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-blue{background:#EFF6FF;color:#1D4ED8}.tag-amber{background:#FEF3C7;color:#92400E}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes typing{0%{width:0}100%{width:100%}}@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}.animate-in{animation:fadeInUp .5s ease-out}.chat-ai{display:flex;gap:12px;margin-bottom:20px;animation:fadeInUp .4s ease-out}.chat-ai .avatar{width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}.chat-ai .bubble{background:var(--card);border:1px solid var(--border);border-radius:16px 16px 16px 4px;padding:14px 18px;max-width:80%;font-size:15px;line-height:1.55}.chat-user{display:flex;gap:12px;justify-content:flex-end;margin-bottom:20px;animation:fadeInUp .4s ease-out}.chat-user .bubble{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:16px 16px 4px 16px;padding:14px 18px;max-width:75%;font-size:15px}.progress-bar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;transition:all .5s}.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .5s ease-out}@media(max-width:768px){.container{padding:0 16px}.chat-ai .bubble,.chat-user .bubble{max-width:90%}}</style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
@@ -66,44 +68,38 @@ function addChat(msg,type){
   chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
 }
 
-function send(){
+async function send(){
   const val=answer.value.trim();if(!val)return;
   const s=steps[step];answers[s.key]=val;
   addChat(val,'user');
   if(step<steps.length-1){
-    step++;
-    addChat(steps[step].q,'ai');
-    updateInput();answer.value='';
+    step++;addChat(steps[step].q,'ai');updateInput();answer.value='';
   }else{
     addChat('好的！正在为你规划 '+answers.destination+' 的 '+answers.days+' 天旅行...','ai');
     progress.style.width='100%';
-    setTimeout(()=>{
-      document.querySelector('main').innerHTML='';
-      let html='<div class="container" style="text-align:center;padding:40px 0;">';
-      html+='<div style="font-size:64px;margin-bottom:16px;">🎉</div>';
-      html+='<h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:8px;">行程已生成！</h2>';
-      html+='<p style="color:var(--muted-fg);margin-bottom:32px;">'+answers.destination+'之旅 · '+answers.days+'天 · '+answers.startDate+' 出发</p>';
-      const places=['浅草寺','晴空塔','秋叶原','筑地市场','银座','涩谷','新宿御苑','明治神宫'];
-      for(let d=0;d<parseInt(answers.days||5);d++){
-        html+='<div class="card animate-in" style="margin-bottom:12px;text-align:left;">';
-        html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">';
-        html+='<span class="tag tag-blue">Day '+(d+1)+'</span>';
-        html+='<span style="font-size:13px;color:var(--muted-fg);">☀️ 晴 25°C</span></div>';
-        for(let p=0;p<Math.min(3+Math.floor(Math.random()*2),places.length-d);p++){
-          const name=places[(d*2+p)%places.length],time=['09:00','10:30','13:00','15:30'][p],cat=['🏯','🗼','🛍','🍜'][p];
-          html+='<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;">';
-          html+='<span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">'+time+'</span>';
-          html+='<span>'+cat+'</span><span>'+name+'</span></div>';
-        }html+='</div>';
-      }
-      const tripData = generateTripPlan(answers.destination, answers.startDate, parseInt(answers.days||5), parseInt(answers.members||1), parseInt(answers.budget||5000), answers.preferences);
-      html+='<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
-      html+='<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
-      html+='<script>window._tripData='+JSON.stringify(tripData)+';function confirmTrip(){var t=addTrip(window._tripData);location.href="trip-detail.html?id="+t.id;}</script>';
-      document.querySelector('main').innerHTML=html;
-      document.querySelector('footer').style.display='none';
-    },2000);
-    document.querySelector('footer').innerHTML='';
+    document.querySelector('footer').innerHTML='<div class="container" style="text-align:center;padding:20px;"><p style="color:var(--muted-fg);">🤖 AI 正在为您规划...</p></div>';
+    const numDays=parseInt(answers.days||5),numMembers=parseInt(answers.members||1),numBudget=parseInt(answers.budget||5000);
+    let tripDays=null;
+    const aiResult=await aiPlanTrip({destination:answers.destination,startDate:answers.startDate,numDays,members:numMembers,budget:numBudget,preferences:answers.preferences||''});
+    if(aiResult?.days?.length){tripDays=aiResult.days.map((d,i)=>({id:'ai-d'+Date.now()+'-'+i,date:d.date||answers.startDate,weather:d.weather||'☀️ 晴 25°C',tip:d.tip||'',places:(d.places||[]).map(p=>({id:'ai-p'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:p.name,cat:p.category||p.cat||'景点',time:p.time_slot||p.time||'09:00',duration:p.duration||'1h',fee:p.fee||'免费',lat:p.lat||null,lng:p.lng||null}))}));}
+    if(!tripDays?.length) tripDays=generateTripPlan(answers.destination,answers.startDate,numDays,numMembers,numBudget,answers.preferences);
+    const endDate=new Date(answers.startDate);endDate.setDate(endDate.getDate()+numDays-1);
+    const tripData={name:answers.destination+'之旅',destination:answers.destination,startDate:answers.startDate,endDate:endDate.toISOString().split('T')[0],members:numMembers,days:tripDays,budget:numBudget,emoji:'🌏',readiness:30};
+    let html='<div class="container" style="text-align:center;padding:40px 0;">';
+    html+='<div style="font-size:64px;margin-bottom:16px;">🎉</div>';
+    html+='<h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:8px;">行程已生成！</h2>';
+    html+='<p style="color:var(--muted-fg);margin-bottom:8px;">'+answers.destination+'之旅 · '+numDays+'天 · '+answers.startDate+' 出发</p>';
+    html+='<p style="color:var(--accent);font-size:12px;margin-bottom:24px;">'+(aiResult?.days?.length?'🤖 AI 生成':'📋 模板生成')+'</p>';
+    for(var d=0;d<tripDays.length;d++){var day=tripDays[d];
+      html+='<div class="card animate-in" style="margin-bottom:12px;text-align:left;">';
+      html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;"><span class="tag tag-blue">Day '+(d+1)+'</span><span style="font-size:13px;color:var(--muted-fg);">'+(day.weather||'☀️ 晴 25°C')+'</span></div>';
+      for(var p=0;p<day.places.length;p++){var pl=day.places[p];html+='<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">'+(pl.time||'09:00')+'</span><span>'+(pl.cat==='美食'?'🍜':pl.cat==='咖啡'?'☕':pl.cat==='购物'?'🛍':pl.cat==='住宿'?'🏨':'📍')+'</span><span>'+pl.name+'</span></div>';}
+      html+='</div>';
+    }
+    html+='<script>window._tripData='+JSON.stringify(tripData)+';function confirmTrip(){var t=addTrip(window._tripData);saveTripToDB(window._tripData);location.href="trip-detail.html?id="+t.id;}</script>';
+    html+='<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
+    html+='<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
+    document.querySelector('main').innerHTML=html;document.querySelector('footer').style.display='none';
   }
 }
 

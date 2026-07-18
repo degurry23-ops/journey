@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTrips } from '../contexts/TripContext'
 import { addTrip as saveTrip } from '../utils/storage'
 import { generateTripPlan } from '../data/mockAI'
+import { aiPlanTrip } from '../lib/supabase'
 
 const STEPS = [
   { key:'destination', q:'Hi！准备去哪里旅行？', placeholder:'例如：日本东京', icon:'🌏', hint:'输入你想去的城市或国家' },
@@ -43,12 +44,45 @@ export default function CreateTrip() {
     }
   };
 
-  const handleGenerate = (data) => {
+  const handleGenerate = async (data) => {
     setGenerating(true);
     const days = parseInt(data.days) || 5;
-    setTimeout(() => {
-      const tripDays = generateTripPlan(data.destination, days, data.preferences);
-      const endDate = new Date(data.startDate);
+    // Try AI first, fallback to mock
+    let tripDays;
+    try {
+      const aiResult = await aiPlanTrip({
+        destination: data.destination,
+        startDate: data.startDate,
+        numDays: days,
+        members: parseInt(data.members) || 1,
+        budget: parseInt(data.budget) || 5000,
+        preferences: data.preferences || '',
+      });
+      if (aiResult?.days?.length) {
+        tripDays = aiResult.days.map((d, i) => ({
+          id: crypto.randomUUID(),
+          date: d.day || i,
+          places: (d.places || []).map(p => ({
+            ...p,
+            id: crypto.randomUUID(),
+            cat: p.category || p.cat || '景点',
+            time: p.time_slot || p.time || '09:00',
+            duration: p.duration || '1h',
+            fee: p.fee || '免费',
+            lat: p.lat || null,
+            lng: p.lng || null,
+          })),
+          weather: d.weather || '☀️ 晴 25°C',
+          tip: d.tip || '',
+        }));
+      }
+    } catch (e) {
+      console.log('AI unavailable, using mock:', e.message);
+    }
+    if (!tripDays?.length) {
+      tripDays = generateTripPlan(data.destination, days, data.preferences);
+    }
+    const endDate = new Date(data.startDate);
       endDate.setDate(endDate.getDate() + days - 1);
       const trip = {
         name:`${data.destination}之旅`, destination:data.destination,
@@ -58,7 +92,6 @@ export default function CreateTrip() {
       };
       setGenerated(trip);
       setGenerating(false);
-    }, 2500);
   };
 
   const handleConfirm = () => {
