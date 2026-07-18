@@ -1,122 +1,109 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Day 1 — 东京之旅</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Day Timeline — Journey</title>
 <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="storage.js"></script>
-<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--card:#FFF;--border:#E2E8F0;--success:#10B981;--radius:12px;--radius-lg:16px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6}.container{max-width:800px;margin:0 auto;padding:0 24px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:10px 20px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;min-height:44px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,82,255,.35)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-blue{background:#EFF6FF;color:#1D4ED8}.tag-green{background:#D1FAE5;color:#065F46}@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.weather-card{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:var(--radius-lg);padding:20px}.timeline-item{display:flex;gap:14px;position:relative}.timeline-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent);flex-shrink:0;margin-top:4px;z-index:1}.timeline-line{position:absolute;left:5px;top:20px;bottom:-8px;width:2px;background:linear-gradient(to bottom,var(--accent),var(--border))}.day-switcher{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}.day-switcher button{padding:8px 14px;border-radius:999px;border:none;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;background:var(--muted);color:var(--muted-fg)}.day-switcher button.active{background:var(--accent);color:#fff}@media(max-width:768px){.container{padding:0 16px}}</style>
+<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--card:#FFF;--border:#E2E8F0;--success:#10B981;--radius:12px;--radius-lg:16px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:8px 16px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}.btn:active{transform:scale(.98)}.btn-primary{background:var(--accent);color:#fff}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--fg)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-blue{background:#EFF6FF;color:#1D4ED8}.weather-bar{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:12px}.timeline-item{display:flex;gap:12px;margin-bottom:8px}.timeline-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent);flex-shrink:0;margin-top:5px;z-index:1}.timeline-line{position:absolute;left:5px;top:20px;height:calc(100% - 8px);width:2px;background:var(--border)}@media(max-width:768px){.weather-bar{margin:0 12px}}</style>
 </head>
-<body>
+<body style="min-height:100vh;display:flex;flex-direction:column;">
 
-<header style="padding:14px 0;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
-    <a href="trip-detail.html" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
-    <div style="text-align:center;">
-      <div style="font-weight:600;">东京之旅</div>
-      <div style="font-size:12px;color:var(--muted-fg);">Day 1 · 2026.08.02 · 周五</div>
-    </div>
-    <a href="map.html" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;"><i class="fas fa-map"></i> 地图</a>
-  </div>
+<header style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;">
+  <a href="#" id="backLink" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <div style="text-align:center;" id="dayTitle"></div>
+  <a href="#" id="mapLink" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;"><i class="fas fa-map"></i> 地图</a>
 </header>
 
-<main class="container" style="padding:20px 0 80px;">
+<div id="daySwitcher" style="display:flex;gap:6px;overflow-x:auto;padding:10px 16px;"></div>
 
-  <!-- Day switcher -->
-  <div class="day-switcher" style="margin-bottom:20px;">
-    <button class="active">Day 1</button>
-    <button>Day 2</button>
-    <button>Day 3</button>
-    <button>Day 4</button>
-    <button>Day 5</button>
-  </div>
+<div id="content" style="flex:1;padding:0 16px 80px;"></div>
 
-  <!-- Weather + AI Tip -->
-  <div class="weather-card" style="margin-bottom:24px;display:flex;align-items:center;gap:16px;">
-    <span style="font-size:40px;">☀️</span>
-    <div>
-      <div style="font-weight:600;font-size:18px;">晴 25°C</div>
-      <div style="font-size:14px;opacity:.85;margin-top:4px;">💡 今天预计步行 16km，下午三点可能下雨，建议带折叠伞</div>
-    </div>
-  </div>
-
-  <!-- Timeline -->
-  <div style="margin-bottom:24px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <h2 style="font-family:var(--font-display);font-size:1.3rem;">今日<span class="gradient-text">行程</span></h2>
-      <button class="btn btn-primary" style="font-size:13px;padding:8px 16px;"><i class="fas fa-plus"></i>添加</button>
-    </div>
-
-    <div style="position:relative;padding-left:2px;">
-      <div class="timeline-item" style="margin-bottom:12px;">
-        <div class="timeline-dot"></div>
-        <div class="card" style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-family:var(--font-mono);font-size:13px;color:var(--muted-fg);">09:00</span>
-              <span style="font-size:20px;">🏯</span>
-              <span style="font-weight:600;">浅草寺</span>
-              <span class="tag tag-blue">景点</span>
-            </div>
-            <span style="font-size:12px;color:var(--muted-fg);">1.5h</span>
-          </div>
-          <div style="font-size:12px;color:var(--muted-fg);margin-top:4px;margin-left:52px;">免费 · <a href="#" style="color:var(--accent);text-decoration:none;">📍 导航</a></div>
-        </div>
-      </div>
-
-      <div class="timeline-item" style="margin-bottom:12px;">
-        <div class="timeline-dot"></div>
-        <div style="position:absolute;left:5px;top:20px;bottom:calc(100% - 20px);width:2px;background:linear-gradient(to bottom,var(--accent),var(--border));"></div>
-        <div class="card" style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-family:var(--font-mono);font-size:13px;color:var(--muted-fg);">11:00</span>
-              <span style="font-size:20px;">🗼</span>
-              <span style="font-weight:600;">晴空塔</span>
-              <span class="tag tag-blue">景点</span>
-            </div>
-            <span style="font-size:12px;color:var(--muted-fg);">1.5h</span>
-          </div>
-          <div style="font-size:12px;color:var(--muted-fg);margin-top:4px;margin-left:52px;">¥2,100 · <a href="#" style="color:var(--accent);text-decoration:none;">📍 导航</a></div>
-        </div>
-      </div>
-
-      <div class="timeline-item" style="margin-bottom:12px;">
-        <div class="timeline-dot"></div>
-        <div class="card" style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-family:var(--font-mono);font-size:13px;color:var(--muted-fg);">13:00</span>
-              <span style="font-size:20px;">🛍</span>
-              <span style="font-weight:600;">秋叶原</span>
-              <span class="tag tag-blue">购物</span>
-            </div>
-            <span style="font-size:12px;color:var(--muted-fg);">3h</span>
-          </div>
-          <div style="font-size:12px;color:var(--muted-fg);margin-top:4px;margin-left:52px;">电器街 · <a href="#" style="color:var(--accent);text-decoration:none;">📍 导航</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Today's spending -->
-  <div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:22px;">💰</span>
-      <span style="font-size:14px;color:var(--muted-fg);">今日消费</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span style="font-weight:700;font-size:18px;">¥468</span>
-      <a href="expenses.html" class="btn btn-primary" style="font-size:12px;padding:6px 14px;">+ 记账</a>
-    </div>
-  </div>
-
-</main>
-
-<nav style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:8px 24px;display:flex;justify-content:space-around;z-index:50;padding-bottom:max(8px,env(safe-area-inset-bottom));">
-  <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted-fg);font-size:12px;"><i class="fas fa-home" style="font-size:20px;"></i>首页</a>
-  <a href="trip-detail.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--accent);font-size:12px;font-weight:500;"><i class="fas fa-route" style="font-size:20px;"></i>行程</a>
-  <a href="expenses.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted-fg);font-size:12px;"><i class="fas fa-wallet" style="font-size:20px;"></i>记账</a>
+<nav style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:8px 16px;display:flex;justify-content:space-around;z-index:50;padding-bottom:max(8px,env(safe-area-inset-bottom));">
+  <a href="index.html" style="display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted-fg);font-size:11px;"><i class="fas fa-home"></i>首页</a>
+  <span style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--accent);font-size:11px;font-weight:500;"><i class="fas fa-route"></i>行程</span>
+  <a href="#" id="expensesLink" style="display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted-fg);font-size:11px;"><i class="fas fa-wallet"></i>记账</a>
 </nav>
 
+<script>
+const params=new URLSearchParams(location.search);
+const trip=getTripById(params.get('trip'));
+const dayId=params.get('day');
+if(!trip||!dayId){document.body.innerHTML='<div style="text-align:center;padding:100px;color:var(--muted-fg);"><h2>数据不存在</h2><a href="index.html">返回首页</a></div>';}
+
+const dayIdx=trip.days.findIndex(d=>d.id===dayId);
+const day=trip.days[dayIdx];
+if(!day){document.body.innerHTML='<div style="text-align:center;padding:100px;"><h2>Day not found</h2></div>';}
+
+// Set back link
+document.getElementById('backLink').href='trip-detail.html?id='+trip.id;
+document.getElementById('mapLink').href='map.html?trip='+trip.id;
+document.getElementById('expensesLink').href='expenses.html?trip='+trip.id;
+
+// Day title
+document.getElementById('dayTitle').innerHTML='<div style="font-weight:600;">'+trip.destination+'之旅</div><div style="font-size:12px;color:var(--muted-fg);">Day '+(dayIdx+1)+' · '+(day.date||trip.startDate)+'</div>';
+
+// Day switcher
+document.getElementById('daySwitcher').innerHTML=trip.days.map((d,i)=>'<a href="day-timeline.html?trip='+trip.id+'&day='+d.id+'" style="padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500;text-decoration:none;'+(d.id===dayId?'background:var(--accent);color:#fff;':'background:var(--muted);color:var(--muted-fg);')+'">Day '+(i+1)+'</a>').join('');
+
+// Content
+const catIcon={'景点':'🏯','美食':'🍜','咖啡':'☕','购物':'🛍','住宿':'🏨','交通':'🚇','其他':'📍'};
+const totalExp=(trip.expenses||[]).filter(e=>e.dayId===dayId).reduce((s,e)=>s+e.amount,0);
+let html='';
+
+// Weather
+html+='<div class="weather-bar" style="margin-bottom:20px;"><span style="font-size:32px;">'+(day.weather?.includes('雨')?'🌧':day.weather?.includes('多云')?'⛅':'☀️')+'</span><div><div style="font-weight:600;">'+(day.weather||'☀️ 晴 25°C')+'</div><div style="font-size:13px;opacity:.85;margin-top:2px;">💡 '+(day.tip||'今天天气不错，适合出行~')+'</div></div></div>';
+
+// Timeline title
+html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-family:var(--font-display);font-size:1.2rem;">今日<span class="gradient-text">行程</span></h2><button class="btn btn-primary" onclick="document.getElementById(\'addForm\').style.display=\'block\'">+ 添加</button></div>';
+
+// Timeline
+if(!day.places?.length){
+  html+='<div style="text-align:center;padding:40px;color:var(--muted-fg);">📍 还没有安排</div>';
+}else{
+  html+='<div style="position:relative;padding-left:2px;">';
+  day.places.forEach((p,i)=>{
+    html+='<div class="timeline-item" style="position:relative;">';
+    html+='<div class="timeline-dot"></div>';
+    if(i<day.places.length-1) html+='<div class="timeline-line"></div>';
+    html+='<div class="card" style="flex:1;">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;">';
+    html+='<div style="display:flex;align-items:center;gap:8px;">';
+    html+='<span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);">'+(p.time||'09:00')+'</span>';
+    html+='<span>'+(catIcon[p.cat]||'📍')+'</span><span style="font-weight:600;font-size:14px;">'+p.name+'</span>';
+    html+='<span class="tag tag-blue">'+(p.cat||'景点')+'</span></div>';
+    html+='<span style="font-size:12px;color:var(--muted-fg);">'+(p.duration||'1h')+'</span></div>';
+    html+='<div style="font-size:12px;color:var(--muted-fg);margin-top:4px;margin-left:48px;">'+(p.fee||'免费');
+    if(p.lat) html+=' · <a href="https://uri.amap.com/marker?position='+p.lng+','+p.lat+'&name='+encodeURIComponent(p.name)+'" target="_blank" style="color:var(--accent);text-decoration:none;">📍 导航</a>';
+    html+='</div></div></div>';
+  });
+  html+='</div>';
+}
+
+// Today's spending
+if(totalExp>0){
+  html+='<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">💰</span><span style="font-size:14px;color:var(--muted-fg);">今日消费</span></div><div style="display:flex;align-items:center;gap:12px;"><span style="font-weight:700;font-size:16px;">¥'+totalExp.toLocaleString()+'</span><a href="expenses.html?trip='+trip.id+'" class="btn btn-primary" style="font-size:11px;padding:5px 12px;">+ 记账</a></div></div>';
+}
+
+// Add place form
+html+='<div id="addForm" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:24px 24px 0 0;padding:20px;box-shadow:0 -4px 20px rgba(0,0,0,.1);z-index:60;padding-bottom:max(20px,env(safe-area-inset-bottom));">';
+html+='<div style="width:32px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px;"></div>';
+html+='<input class="input" id="placeName" placeholder="地点名称" style="margin-bottom:8px;width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:15px;">';
+html+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
+['景点','美食','咖啡','购物','住宿','交通','其他'].forEach(c=>{html+='<span onclick="this.style.background=\'var(--accent)\';this.style.color=\'#fff\';document.getElementById(\'placeCat\').value=\''+c+'\'" style="padding:4px 10px;border-radius:999px;font-size:12px;background:var(--muted);color:var(--muted-fg);cursor:pointer;">'+(catIcon[c]||'📍')+' '+c+'</span>';});
+html+='</div><input type="hidden" id="placeCat" value="景点">';
+html+='<div style="display:flex;gap:8px;margin-bottom:12px;"><input id="placeTime" placeholder="时间 (09:00)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;"><input id="placeDur" placeholder="时长 (1h)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;"></div>';
+html+='<div style="display:flex;gap:8px;"><button onclick="document.getElementById(\'addForm\').style.display=\'none\'" class="btn btn-outline" style="flex:1;">取消</button><button onclick="addPlace()" class="btn btn-primary" style="flex:1;">添加</button></div></div>';
+
+document.getElementById('content').innerHTML=html;
+
+window.addPlace=function(){
+  var n=document.getElementById('placeName').value.trim();
+  if(!n)return;
+  var p={id:'p-'+Date.now(),name:n,cat:document.getElementById('placeCat').value,time:document.getElementById('placeTime').value||'09:00',duration:document.getElementById('placeDur').value||'1h',fee:'免费'};
+  day.places.push(p);
+  saveTrips(loadTrips().map(t=>t.id===trip.id?trip:t));
+  location.reload();
+};
+</script>
 </body>
 </html>
