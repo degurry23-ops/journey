@@ -3,6 +3,7 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>东京之旅 — Journey</title>
 <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="storage.js"></script>
 <style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--accent-fg:#FFF;--border:#E2E8F0;--card:#FFF;--radius:12px;--radius-lg:16px;--radius-xl:24px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6}.container{max-width:1000px;margin:0 auto;padding:0 24px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:all .3s}.card:hover{box-shadow:0 10px 25px rgba(0,0,0,.06);transform:translateY(-1px)}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:12px 24px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;min-height:48px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-fg);box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,82,255,.35)}.btn-full{width:100%}.btn-lg{padding:16px 32px;font-size:17px;border-radius:var(--radius-lg)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-amber{background:#FEF3C7;color:#92400E}.tag-green{background:#D1FAE5;color:#065F46}.tag-blue{background:#EFF6FF;color:#1D4ED8}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes progress{from{width:0}}.cover{background:linear-gradient(135deg,var(--fg),#1E293B);color:#fff;padding:80px 0 32px;position:relative;overflow:hidden}.cover::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(0,82,255,.35),transparent 50%),radial-gradient(circle at 20% 80%,rgba(77,124,255,.2),transparent 50%);pointer-events:none}.cover::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:-30px;position:relative;z-index:2}.action-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;color:var(--fg);transition:all .2s}.action-btn:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}.action-btn .icon{font-size:28px}.action-btn .label{font-size:13px;font-weight:500;color:var(--muted-fg)}.day-card{cursor:pointer;text-decoration:none;color:inherit;display:block;margin-bottom:12px}@media(max-width:768px){.container{padding:0 16px}.cover{padding:48px 0 24px}}</style>
 </head>
 <body>
@@ -12,10 +13,10 @@
     <a href="journeys.html" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;margin-bottom:20px;display:inline-block;"><i class="fas fa-arrow-left"></i> 返回</a>
     <div style="display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
       <div>
-        <h1 style="font-family:var(--font-display);font-size:clamp(2rem,3vw,3rem);line-height:1.15;">东京<span class="gradient-text">之旅</span></h1>
-        <p style="font-size:15px;opacity:.7;margin-top:8px;">2026.08.02 - 08.06 · 5天 · 👥 4人</p>
+        <h1 style="font-family:var(--font-display);font-size:clamp(2rem,3vw,3rem);line-height:1.15;" id="tripTitle"></h1>
+        <p style="font-size:15px;opacity:.7;margin-top:8px;" id="tripMeta"></p>
       </div>
-      <span class="tag tag-amber" style="font-size:13px;padding:6px 14px;">准备中</span>
+      <span id="tripStatus" style="font-size:13px;padding:6px 14px;"></span>
     </div>
     <div style="max-width:400px;margin-top:24px;background:rgba(255,255,255,.12);border-radius:var(--radius-lg);padding:20px;backdrop-filter:blur(8px);">
       <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span>旅行准备度</span><span style="font-weight:600;">65%</span></div>
@@ -41,25 +42,61 @@
 </main>
 
 <script>
-const days=[
-  {n:1,weather:'☀️ 晴 25°C',places:[{t:'09:00',n:'浅草寺',cat:'🏯',d:'1.5h'},{t:'11:00',n:'晴空塔',cat:'🗼',d:'1.5h'},{t:'13:00',n:'秋叶原',cat:'🛍',d:'3h'}]},
-  {n:2,weather:'⛅ 多云 22°C',places:[{t:'08:00',n:'筑地市场',cat:'🍜',d:'1h'},{t:'10:00',n:'银座',cat:'🛍',d:'2h'},{t:'14:00',n:'涩谷',cat:'🛍',d:'2h'}]},
-  {n:3,weather:'☀️ 晴 28°C',places:[{t:'09:00',n:'明治神宫',cat:'🏯',d:'1h'},{t:'10:30',n:'新宿御苑',cat:'🏯',d:'1.5h'},{t:'13:00',n:'一兰拉面',cat:'🍜',d:'0.5h'}]},
-  {n:4,weather:'🌧 小雨 18°C',places:[{t:'09:00',n:'迪士尼海洋',cat:'🎢',d:'全天'}]},
-  {n:5,weather:'☁️ 阴 20°C',places:[{t:'09:00',n:'浅草寺',cat:'🏯',d:'1h'},{t:'12:00',n:'Blue Bottle',cat:'☕',d:'0.5h'},{t:'15:00',n:'自由探索',cat:'📍',d:'--'}]},
-];
-document.getElementById('days').innerHTML=days.map(d=>`
-  <a href="day-timeline.html" class="card day-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="tag tag-blue">Day ${d.n}</span>
-        <span style="font-size:14px;">${d.weather}</span>
+const params=new URLSearchParams(location.search);
+const trip=getTripById(params.get('id'))||loadTrips()[0];
+if(!trip){document.body.innerHTML='<div style="text-align:center;padding:100px;color:var(--muted-fg);"><h2>旅行不存在</h2><a href="index.html">返回首页</a></div>';}
+
+document.getElementById('tripTitle').innerHTML=trip.destination+'<span class="gradient-text">之旅</span>';
+document.getElementById('tripMeta').textContent=trip.startDate+' - '+trip.endDate+' · '+trip.days.length+'天 · 👥 '+(trip.members||1)+'人';
+const statusTag=document.getElementById('tripStatus');
+const st=trip.status;
+statusTag.className='tag '+(st==='traveling'?'tag-green':st==='completed'?'tag-gray':'tag-amber');
+statusTag.textContent=st==='traveling'?'进行中':st==='completed'?'已完成':'准备中';
+
+// Readiness
+const readiness=trip.readiness||30;
+const rdBar=document.querySelector('.cover .animate-progress');
+if(rdBar)rdBar.style.width=readiness+'%';
+const rdPct=document.querySelector('.cover span[style*="font-weight:600"]');
+if(rdPct)rdPct.textContent=readiness+'%';
+
+// Day list
+const daysEl=document.getElementById('days');
+if(daysEl){
+  daysEl.innerHTML=trip.days.map((d,i)=>`
+    <a href="day-timeline.html?trip=${trip.id}&day=${d.id}" class="card day-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="tag tag-blue">Day ${i+1}</span>
+          <span style="font-size:14px;">${d.weather||'🌤'}</span>
+        </div>
+        <span style="font-size:13px;color:var(--muted-fg);">${d.places?.length||0} 个地点 →</span>
       </div>
-      <span style="font-size:13px;color:var(--muted-fg);">${d.places.length} 个地点 →</span>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">${d.places.map(p=>`<span style="font-size:12px;background:var(--muted);padding:3px 8px;border-radius:6px;color:var(--muted-fg);">${p.t} ${p.n}</span>`).join('')}</div>
-  </a>
-`).join('');
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">${(d.places||[]).map(p=>`<span style="font-size:12px;background:var(--muted);padding:3px 8px;border-radius:6px;color:var(--muted-fg);">${p.time||''} ${p.name}</span>`).join('')}</div>
+    </a>
+  `).join('');
+}
+
+// Quick action links
+document.querySelectorAll('.action-btn').forEach(a=>{
+  const href=a.getAttribute('href');
+  if(href)a.setAttribute('href',href+'?trip='+trip.id);
+});
+
+// Start/Complete button
+const btnArea=document.querySelector('main.container > a.btn');
+if(btnArea){
+  if(trip.status==='planning'){
+    btnArea.textContent='✈️ 开始旅行';
+    btnArea.onclick=function(){trip.status='traveling';trip.readiness=Math.max(trip.readiness,80);updateTrip(trip);location.reload();};
+  }else if(trip.status==='traveling'){
+    btnArea.textContent='🏁 结束旅行，生成日志';
+    btnArea.onclick=function(){trip.status='completed';trip.readiness=100;updateTrip(trip);location.href='journal.html?trip='+trip.id;};
+  }else{
+    btnArea.textContent='📖 查看旅行日志';
+    btnArea.href='journal.html?trip='+trip.id;
+  }
+}
 </script>
 </body>
 </html>
