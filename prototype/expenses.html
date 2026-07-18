@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>旅行记账 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--card:#FFF;--border:#E2E8F0;--radius:12px;--radius-lg:16px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6}.container{max-width:800px;margin:0 auto;padding:0 24px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:10px 20px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;min-height:44px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--fg)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-amber{background:#FEF3C7;color:#92400E}.tag-green{background:#D1FAE5;color:#065F46}@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.summary-card{background:linear-gradient(135deg,var(--fg),#1E293B);color:#fff;border-radius:var(--radius-lg);padding:28px;position:relative;overflow:hidden}.summary-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 100% 0,rgba(0,82,255,.3),transparent 50%);pointer-events:none}.tab-bar{display:flex;gap:4px;background:var(--muted);border-radius:999px;padding:4px}.tab-bar button{flex:1;padding:10px 16px;border-radius:999px;border:none;background:0 0;font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--muted-fg);cursor:pointer}.tab-bar button.active{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08)}.cat-bar{height:8px;background:var(--muted);border-radius:999px;overflow:hidden;display:flex}.expense-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}.expense-row:last-child{border-bottom:none}@media(max-width:768px){.container{padding:0 16px}}</style>
+</head>
+<body>
+
+<header style="padding:14px 0;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+    <a href="day-timeline.html" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+    <h1 style="font-family:var(--font-display);font-size:1.2rem;">旅行<span class="gradient-text">记账</span></h1>
+    <div style="width:48px;"></div>
+  </div>
+</header>
+
+<main class="container" style="padding-top:20px;padding-bottom:80px;">
+
+  <div class="summary-card" style="margin-bottom:20px;">
+    <div style="position:relative;z-index:2;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:14px;opacity:.7;">总消费</span><span style="font-size:12px;opacity:.5;">4人同行</span></div>
+      <div style="font-family:var(--font-display);font-size:3rem;">¥4,680</div>
+      <div style="display:flex;gap:24px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);">
+        <div><span style="font-size:12px;opacity:.5;">人均</span><div style="font-weight:700;font-size:18px;">¥1,170</div></div>
+        <div><span style="font-size:12px;opacity:.5;">笔数</span><div style="font-weight:700;font-size:18px;">12</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <h3 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted-fg);margin-bottom:16px;">分类统计</h3>
+    <div style="space-y:12px;">
+      <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>🍜 餐饮</span><span style="font-weight:600;">¥2,100</span></div><div class="cat-bar"><div style="width:45%;background:#EF4444;"></div></div></div>
+      <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>🚇 交通</span><span style="font-weight:600;">¥890</span></div><div class="cat-bar"><div style="width:19%;background:#F59E0B;"></div></div></div>
+      <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>🏨 住宿</span><span style="font-weight:600;">¥1,200</span></div><div class="cat-bar"><div style="width:26%;background:#8B5CF6;"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>🎫 门票</span><span style="font-weight:600;">¥490</span></div><div class="cat-bar"><div style="width:10%;background:var(--accent);"></div></div></div>
+    </div>
+  </div>
+
+  <div class="tab-bar" style="margin-bottom:20px;">
+    <button class="active">消费明细</button>
+    <button>AA 结算</button>
+  </div>
+
+  <div class="card" id="expenseList">
+    <div class="expense-row"><div style="width:44px;height:44px;border-radius:var(--radius);background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:20px;">🍜</div><div style="flex:1"><div style="font-weight:600;font-size:15px;">餐饮 · 一兰拉面</div><div style="font-size:12px;color:var(--muted-fg);">我支付 · 08.02</div></div><span style="font-weight:700;">¥980</span></div>
+    <div class="expense-row"><div style="width:44px;height:44px;border-radius:var(--radius);background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:20px;">🚇</div><div style="flex:1"><div style="font-weight:600;font-size:15px;">交通 · Suica充值</div><div style="font-size:12px;color:var(--muted-fg);">小月支付 · 08.02</div></div><span style="font-weight:700;">¥500</span></div>
+    <div class="expense-row"><div style="width:44px;height:44px;border-radius:var(--radius);background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:20px;">🎫</div><div style="flex:1"><div style="font-weight:600;font-size:15px;">门票 · 晴空塔</div><div style="font-size:12px;color:var(--muted-fg);">小林支付 · 08.02</div></div><span style="font-weight:700;">¥2,100</span></div>
+  </div>
+
+</main>
+
+</body>
+</html>

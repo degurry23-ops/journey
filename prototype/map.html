@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>地图模式 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--card:#FFF;--border:#E2E8F0;--radius:12px;--radius-lg:16px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6}#map{width:100%;height:calc(100vh - 120px);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.06)}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:var(--radius);padding:10px 20px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;min-height:44px}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.btn-primary:hover{transform:translateY(-1px)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-blue{background:#EFF6FF;color:#1D4ED8}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.leaflet-container{font-family:var(--font-body)}@media(max-width:768px){#map{height:calc(100vh - 140px);border-radius:0}}</style>
+</head>
+<body>
+
+<header style="padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
+  <a href="day-timeline.html" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <h1 style="font-family:var(--font-display);font-size:1.2rem;">地图<span class="gradient-text">模式</span></h1>
+  <a href="day-timeline.html" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;"><i class="fas fa-list"></i> 列表</a>
+</header>
+
+<div style="padding:12px 24px;display:flex;gap:6px;overflow-x:auto;background:var(--bg);">
+  <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;" onclick="filterDay('all',this)">全部</button>
+  <button class="btn" style="font-size:12px;padding:6px 14px;background:var(--muted);color:var(--muted-fg);" onclick="filterDay(1,this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0052FF;margin-right:4px;"></span>Day 1</button>
+  <button class="btn" style="font-size:12px;padding:6px 14px;background:var(--muted);color:var(--muted-fg);" onclick="filterDay(2,this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4D7CFF;margin-right:4px;"></span>Day 2</button>
+  <button class="btn" style="font-size:12px;padding:6px 14px;background:var(--muted);color:var(--muted-fg);" onclick="filterDay(3,this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F59E0B;margin-right:4px;"></span>Day 3</button>
+</div>
+
+<div style="padding:0 24px 24px;"><div id="map"></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const allPlaces=[
+  {d:1,name:'浅草寺',lat:35.7148,lng:139.7967,color:'#0052FF',time:'09:00'},
+  {d:1,name:'晴空塔',lat:35.7101,lng:139.8107,color:'#0052FF',time:'11:00'},
+  {d:1,name:'秋叶原',lat:35.7023,lng:139.7745,color:'#0052FF',time:'13:00'},
+  {d:2,name:'筑地市场',lat:35.6654,lng:139.7707,color:'#4D7CFF',time:'08:00'},
+  {d:2,name:'银座',lat:35.6722,lng:139.7718,color:'#4D7CFF',time:'10:00'},
+  {d:2,name:'涩谷',lat:35.658,lng:139.7016,color:'#4D7CFF',time:'14:00'},
+  {d:3,name:'明治神宫',lat:35.6764,lng:139.6993,color:'#F59E0B',time:'09:00'},
+  {d:3,name:'新宿御苑',lat:35.6852,lng:139.71,color:'#F59E0B',time:'10:30'},
+];
+const map=L.map('map').setView([35.68,139.76],13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'}).addTo(map);
+
+let markers=[],lines=[];
+function renderMap(day){
+  markers.forEach(m=>map.removeLayer(m));lines.forEach(l=>map.removeLayer(l));
+  markers=[];lines=[];
+  const filtered=day==='all'?allPlaces:allPlaces.filter(p=>p.d===day);
+  const groups={};filtered.forEach(p=>{if(!groups[p.color])groups[p.color]=[];groups[p.color].push(p)});
+
+  Object.values(groups).forEach(group=>{
+    group.forEach(p=>{
+      const m=L.circleMarker([p.lat,p.lng],{radius:8,fillColor:p.color,color:'#fff',weight:2,fillOpacity:.9})
+        .bindPopup(`<b>${p.name}</b><br/>${p.time}`).addTo(map);
+      markers.push(m);
+    });
+    if(group.length>1){
+      const coords=group.map(p=>[p.lat,p.lng]);
+      const l=L.polyline(coords,{color:group[0].color,weight:3,opacity:.6,dashArray:'8 4'}).addTo(map);
+      lines.push(l);
+    }
+  });
+  if(filtered.length>0){
+    const bounds=filtered.map(p=>[p.lat,p.lng]);
+    map.fitBounds(bounds,{padding:[40,40]});
+  }
+}
+renderMap('all');
+
+function filterDay(day,el){
+  document.querySelectorAll('header+div+div button').forEach(b=>{b.style.background='var(--muted)';b.style.color='var(--muted-fg)';b.classList.remove('btn-primary')});
+  el.style.background='linear-gradient(135deg,var(--accent),var(--accent2))';el.style.color='#fff';el.classList.add('btn-primary');
+  renderMap(day);
+}
+</script>
+</body>
+</html>
