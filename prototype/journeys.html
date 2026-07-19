@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>我的旅行 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="storage.js"></script>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--accent-fg:#FFF;--border:#E2E8F0;--card:#FFF;--radius:12px;--radius-lg:16px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}.container{max-width:1200px;margin:0 auto;padding:0 24px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:all .3s ease-out}.card:hover{box-shadow:0 10px 25px rgba(0,0,0,.06);transform:translateY(-2px)}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:12px 24px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;min-height:48px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-fg);box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,82,255,.35)}.btn-full{width:100%}.btn-lg{padding:16px 32px;font-size:17px;border-radius:var(--radius-lg)}.tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-green{background:#D1FAE5;color:#065F46}.tag-blue{background:#EFF6FF;color:#1D4ED8}.tag-amber{background:#FEF3C7;color:#92400E}.tag-gray{background:var(--muted);color:var(--muted-fg)}.trip-card{display:flex;gap:16px;align-items:center;cursor:pointer;text-decoration:none;color:inherit}.trip-card .icon{width:52px;height:52px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.trip-card .icon.blue{background:linear-gradient(135deg,var(--accent),var(--accent2))}.trip-card .icon.green{background:linear-gradient(135deg,#10B981,#34D399)}.trip-card .icon.amber{background:linear-gradient(135deg,#F59E0B,#FBBF24)}.trip-card .icon.purple{background:linear-gradient(135deg,#8B5CF6,#A78BFA)}.trip-card .info{flex:1;min-width:0}.trip-card .name{font-weight:600;font-size:16px}.trip-card .meta{font-size:13px;color:var(--muted-fg);margin-top:2px}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.tab-bar{display:flex;gap:4px;background:var(--muted);border-radius:999px;padding:4px;overflow-x:auto}.tab{flex:1;min-width:80px;padding:10px 16px;border-radius:999px;border:none;background:0 0;font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--muted-fg);cursor:pointer;white-space:nowrap;transition:all .2s}.tab.active{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08)}.trips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}header{padding:20px 0;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50}@media(max-width:768px){.trips-grid{grid-template-columns:1fr}.container{padding:0 16px}}</style>
+</head>
+<body>
+<header><div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+  <a href="index.html" style="font-family:var(--font-display);font-size:20px;color:var(--fg);text-decoration:none;display:flex;align-items:center;gap:10px;">
+    <span style="width:36px;height:36px;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;"><i class="fas fa-map-marker-alt"></i></span>Journey
+  </a>
+  <a href="create.html" class="btn btn-primary" style="padding:10px 20px;font-size:14px;"><i class="fas fa-plus"></i> 创建</a>
+</div></header>
+
+<main class="container" style="padding-top:32px;padding-bottom:80px;">
+  <h1 style="font-family:var(--font-display);font-size:2.5rem;margin-bottom:24px;">我的<span class="gradient-text">旅行</span></h1>
+
+  <div class="tab-bar" style="margin-bottom:28px;">
+    <button class="tab active" onclick="filter('all',this)">全部 (5)</button>
+    <button class="tab" onclick="filter('planning',this)">规划中 (2)</button>
+    <button class="tab" onclick="filter('traveling',this)">进行中 (1)</button>
+    <button class="tab" onclick="filter('completed',this)">已完成 (2)</button>
+  </div>
+
+  <div class="trips-grid" id="tripList"></div>
+
+  <a href="create.html" class="btn btn-primary btn-full btn-lg" style="margin-top:32px;">+ 创建新旅行</a>
+</main>
+
+<script>
+const trips=loadTrips();
+const tags={planning:{cls:'tag-amber',txt:'准备中'},traveling:{cls:'tag-green',txt:'进行中'},completed:{cls:'tag-gray',txt:'已完成'}};
+const iconMap={planning:{icon:'📅',cls:'blue'},traveling:{icon:'✈️',cls:'green'},completed:{icon:'📖',cls:'purple'}};
+const counts={all:trips.length,planning:trips.filter(t=>t.status==='planning').length,traveling:trips.filter(t=>t.status==='traveling').length,completed:trips.filter(t=>t.status==='completed').length};
+document.querySelectorAll('.tab').forEach((t,i)=>{const k=['all','planning','traveling','completed'][i];t.textContent=t.textContent.replace(/\\(.*?\\)/,'('+counts[k]+')');});
+
+function filter(status,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  render(status==='all'?trips:trips.filter(t=>t.status===status));
+}
+
+function render(list){
+  var c=document.getElementById('tripList');
+  if(!list.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted-fg);"><i class="fas fa-inbox" style="font-size:48px;display:block;margin-bottom:16px;"></i>暂无旅行</div>';return}
+  c.innerHTML=list.map(t=>{
+    var ico=iconMap[t.status]||iconMap.planning;
+    var preview=(t.days||[]).slice(0,4).flatMap(d=>d.places||[]).slice(0,5).map(p=>p.name);
+    return '<a href="'+(t.status==='completed'?'journal.html?trip='+t.id:'trip-detail.html?id='+t.id)+'" class="card trip-card">'+
+      '<div class="icon '+ico.cls+'">'+ico.icon+'</div>'+
+      '<div class="info"><div style="display:flex;align-items:center;gap:8px;"><span class="name">'+t.name+'</span><span class="tag '+tags[t.status].cls+'">'+tags[t.status].txt+'</span></div>'+
+      '<div class="meta">'+t.startDate+' - '+t.endDate+' · '+(t.days instanceof Array?t.days.length:t.days)+'天 · 👥 '+(t.members||1)+'人</div>'+
+      (preview.length?'<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">'+preview.map(p=>'<span style="font-size:11px;background:var(--muted);padding:2px 8px;border-radius:6px;color:var(--muted-fg);">'+p+'</span>').join('')+'</div>':'')+
+      '</div><i class="fas fa-chevron-right" style="color:var(--border);"></i></a>';
+  }).join('');
+}
+render(trips);
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>AI 创建旅行 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="storage.js"></script>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>:root{--bg:#FAFAFA;--fg:#0F172A;--muted:#F1F5F9;--muted-fg:#64748B;--accent:#0052FF;--accent2:#4D7CFF;--accent-fg:#FFF;--border:#E2E8F0;--card:#FFF;--radius:12px;--radius-lg:16px;--radius-xl:24px;--font-display:"Calistoga","Noto Sans SC",Georgia,serif;--font-body:"Inter","Noto Sans SC",system-ui,sans-serif;--font-mono:"JetBrains Mono",monospace}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}.container{max-width:800px;margin:0 auto;padding:0 24px}.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);padding:12px 24px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease-out;text-decoration:none;min-height:48px}.btn:active{transform:scale(.98)}.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-fg);box-shadow:0 4px 14px rgba(0,82,255,.2)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,82,255,.35)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--fg)}.btn-outline:hover{border-color:rgba(0,82,255,.3);background:var(--muted)}.btn-full{width:100%}.btn-lg{padding:16px 32px;font-size:17px;border-radius:var(--radius-lg)}.input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;font-size:16px;font-family:var(--font-body);color:var(--fg);outline:0;transition:border-color .2s}.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,82,255,.1)}.input::placeholder{color:var(--muted-fg)}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}.tag-blue{background:#EFF6FF;color:#1D4ED8}.tag-amber{background:#FEF3C7;color:#92400E}@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes typing{0%{width:0}100%{width:100%}}@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}.animate-in{animation:fadeInUp .5s ease-out}.chat-ai{display:flex;gap:12px;margin-bottom:20px;animation:fadeInUp .4s ease-out}.chat-ai .avatar{width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}.chat-ai .bubble{background:var(--card);border:1px solid var(--border);border-radius:16px 16px 16px 4px;padding:14px 18px;max-width:80%;font-size:15px;line-height:1.55}.chat-user{display:flex;gap:12px;justify-content:flex-end;margin-bottom:20px;animation:fadeInUp .4s ease-out}.chat-user .bubble{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:16px 16px 4px 16px;padding:14px 18px;max-width:75%;font-size:15px}.progress-bar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;transition:all .5s}.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .5s ease-out}@media(max-width:768px){.container{padding:0 16px}.chat-ai .bubble,.chat-user .bubble{max-width:90%}}</style>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column;">
+
+<header style="padding:20px 0;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="font-family:var(--font-display);font-size:20px;color:var(--fg);text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <span style="width:36px;height:36px;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;"><i class="fas fa-map-marker-alt"></i></span>Journey
+    </a>
+    <a href="index.html" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-times"></i> 取消</a>
+  </div>
+</header>
+
+<!-- Progress -->
+<div class="progress-bar" style="border-radius:0;">
+  <div class="progress-fill" id="progress" style="width:0;"></div>
+</div>
+
+<!-- Chat Area -->
+<main class="container" style="flex:1;padding-top:32px;padding-bottom:120px;" id="chat">
+  <div class="chat-ai"><div class="avatar"><i class="fas fa-robot"></i></div><div class="bubble">你好！我是 Journey 的 AI 旅行规划师 🧳<br>回答几个简单问题，我帮你规划一段完美的旅程。</div></div>
+  <div class="chat-ai"><div class="avatar"><i class="fas fa-robot"></i></div><div class="bubble">Hi！准备去哪里<span class="gradient-text" style="font-weight:600;">旅行</span>？</div></div>
+</main>
+
+<!-- Input Bar -->
+<footer style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:16px 24px;padding-bottom:max(16px,env(safe-area-inset-bottom));z-index:50;">
+  <div class="container" style="display:flex;gap:12px;align-items:center;">
+    <span style="font-size:28px;" id="stepIcon">🌏</span>
+    <input type="text" class="input" id="answer" placeholder="例如：日本东京" autofocus style="flex:1;">
+    <button class="btn btn-primary" id="sendBtn" style="border-radius:50%;width:48px;height:48px;padding:0;flex-shrink:0;">
+      <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+  <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted-fg);" id="stepHint">第 1/6 步 · 按 Enter 发送</div>
+</footer>
+
+<script>
+const steps=[
+  {q:'Hi！准备去哪里旅行？',icon:'🌏',hint:'输入你想去的城市或国家',key:'destination',placeholder:'例如：日本东京'},
+  {q:'什么时候出发？',icon:'📅',hint:'告诉我出发日期就好',key:'startDate',placeholder:'选择日期',type:'date'},
+  {q:'准备玩几天？',icon:'📆',hint:'3天、5天、一周都可以~',key:'days',placeholder:'例如：5',type:'number'},
+  {q:'几个人一起呀？',icon:'👥',hint:'算上你自己哦',key:'members',placeholder:'例如：4',type:'number'},
+  {q:'预算大概多少？（每人）',icon:'💰',hint:'大概数字就行，不用太精确',key:'budget',placeholder:'例如：8000',type:'number'},
+  {q:'最后，有没有特别想体验的？',icon:'🎯',hint:'选几个关键词，AI 帮你安排',key:'preferences',placeholder:'例如：动漫、美食、购物'}
+];
+let step=0,answers={};
+const SUPABASE_URL='https://vddipatvlyvciolwabqh.supabase.co',SUPABASE_KEY='sb_publishable_4ogDVBGxhuJTZrRb0RtuPg_6e77MnA8';
+async function callAI(params){try{const r=await fetch(SUPABASE_URL+'/functions/v1/ai-plan-trip',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+SUPABASE_KEY},body:JSON.stringify(params)});const d=await r.json();return r.ok?d:null;}catch(e){return null;}}
+const chat=document.getElementById('chat'),answer=document.getElementById('answer'),sendBtn=document.getElementById('sendBtn'),progress=document.getElementById('progress'),stepIcon=document.getElementById('stepIcon'),stepHint=document.getElementById('stepHint');
+
+function updateInput(){
+  const s=steps[step];
+  answer.type=s.type||'text';answer.placeholder=s.placeholder;stepIcon.textContent=s.icon;
+  stepHint.textContent=`第 ${step+1}/${steps.length} 步 · 按 Enter 发送`;
+  progress.style.width=`${(step/steps.length)*100}%`;
+}
+
+function addChat(msg,type){
+  const d=document.createElement('div');d.className=type==='ai'?'chat-ai':'chat-user';
+  if(type==='ai') d.innerHTML=`<div class="avatar"><i class="fas fa-robot"></i></div><div class="bubble">${msg}</div>`;
+  else d.innerHTML=`<div class="bubble">${msg}</div>`;
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+}
+
+async function send(){
+  const val=answer.value.trim();if(!val)return;
+  const s=steps[step];answers[s.key]=val;
+  addChat(val,'user');
+  if(step<steps.length-1){
+    step++;addChat(steps[step].q,'ai');updateInput();answer.value='';
+  }else{
+    addChat('好的！正在为你规划 '+answers.destination+' 的 '+answers.days+' 天旅行...','ai');
+    progress.style.width='100%';
+    document.querySelector('footer').innerHTML='<div class="container" style="text-align:center;padding:20px;"><p style="color:var(--muted-fg);">🤖 AI 正在为您规划...</p></div>';
+    const numDays=parseInt(answers.days||5),numMembers=parseInt(answers.members||1),numBudget=parseInt(answers.budget||5000);
+    let tripDays=null;
+    const aiResult=await callAI({destination:answers.destination,startDate:answers.startDate,numDays,members:numMembers,budget:numBudget,preferences:answers.preferences||''});
+    if(aiResult?.days?.length){tripDays=aiResult.days.map((d,i)=>({id:'ai-d'+Date.now()+'-'+i,date:d.date||answers.startDate,weather:d.weather||'☀️ 晴 25°C',tip:d.tip||'',places:(d.places||[]).map(p=>({id:'ai-p'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:p.name,cat:p.category||p.cat||'景点',time:p.time_slot||p.time||'09:00',duration:p.duration||'1h',fee:p.fee||'免费',lat:p.lat||null,lng:p.lng||null}))}));}
+    if(!tripDays?.length) tripDays=generateTripPlan(answers.destination,answers.startDate,numDays,numMembers,numBudget,answers.preferences);
+    const endDate=new Date(answers.startDate);endDate.setDate(endDate.getDate()+numDays-1);
+    const tripData={name:answers.destination+'之旅',destination:answers.destination,startDate:answers.startDate,endDate:endDate.toISOString().split('T')[0],members:numMembers,days:tripDays,budget:numBudget,emoji:'🌏',readiness:30};
+    let html='<div class="container" style="text-align:center;padding:40px 0;">';
+    html+='<div style="font-size:64px;margin-bottom:16px;">🎉</div>';
+    html+='<h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:8px;">行程已生成！</h2>';
+    html+='<p style="color:var(--muted-fg);margin-bottom:8px;">'+answers.destination+'之旅 · '+numDays+'天 · '+answers.startDate+' 出发</p>';
+    html+='<p style="color:var(--accent);font-size:12px;margin-bottom:24px;">'+(aiResult?.days?.length?'🤖 AI 生成':'📋 模板生成')+'</p>';
+    for(var d=0;d<tripDays.length;d++){var day=tripDays[d];
+      html+='<div class="card animate-in" style="margin-bottom:12px;text-align:left;">';
+      html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;"><span class="tag tag-blue">Day '+(d+1)+'</span><span style="font-size:13px;color:var(--muted-fg);">'+(day.weather||'☀️ 晴 25°C')+'</span></div>';
+      for(var p=0;p<day.places.length;p++){var pl=day.places[p];html+='<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">'+(pl.time||'09:00')+'</span><span>'+(pl.cat==='美食'?'🍜':pl.cat==='咖啡'?'☕':pl.cat==='购物'?'🛍':pl.cat==='住宿'?'🏨':'📍')+'</span><span>'+pl.name+'</span></div>';}
+      html+='</div>';
+    }
+    html+='<scr'+'ipt>window._tripData='+JSON.stringify(tripData)+';function confirmTrip(){var t=addTrip(window._tripData);location.href="trip-detail.html?id="+t.id;}</scr'+'ipt>';
+    html+='<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
+    html+='<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
+    document.querySelector('main').innerHTML=html;document.querySelector('footer').style.display='none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{const style=document.createElement('style');style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(style);});
+sendBtn.addEventListener('click',send);
+answer.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+updateInput();
+</script>
+</body>
+</html>
