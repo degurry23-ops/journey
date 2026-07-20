@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>地图模式 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<style>
+  #map { width: 100%; height: calc(100vh - 120px); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+  .leaflet-container { font-family: var(--font-body); }
+  @media (max-width: 768px) { #map { height: calc(100vh - 140px); border-radius: 0; } }
+</style>
+</head>
+<body>
+
+<header style="padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;">
+  <a href="trip-detail.html" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <h1 style="font-family:var(--font-display);font-size:1.2rem;">地图<span class="gradient-text">模式</span></h1>
+  <a href="day-timeline.html" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;"><i class="fas fa-list"></i> 列表</a>
+</header>
+
+<div style="padding:12px 24px;display:flex;gap:6px;overflow-x:auto;background:var(--bg);" id="dayFilters">
+  <button class="btn btn-primary btn-sm" onclick="filterDay('all',this)">全部</button>
+  <button class="btn btn-sm" style="background:var(--muted);color:var(--muted-fg);" onclick="filterDay(1,this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0052FF;margin-right:4px;"></span>Day 1</button>
+</div>
+
+<div style="padding:0 24px 24px;"><div id="map"></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="pages/map.js"></script>
+</body>
+</html>

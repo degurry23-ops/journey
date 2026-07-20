@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Day Timeline — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<style>
+  .weather-bar { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+  .timeline-item { display: flex; gap: 12px; margin-bottom: 8px; }
+  .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--accent); flex-shrink: 0; margin-top: 5px; z-index: 1; }
+  .timeline-line { position: absolute; left: 5px; top: 20px; height: calc(100% - 8px); width: 2px; background: var(--border); }
+  @media (max-width: 768px) { .weather-bar { margin: 0 12px; } }
+</style>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column;">
+
+<header style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;">
+  <a href="#" id="backLink" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <div style="text-align:center;" id="dayTitle"></div>
+  <a href="#" id="mapLink" style="color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;"><i class="fas fa-map"></i> 地图</a>
+</header>
+
+<div id="daySwitcher" style="display:flex;gap:6px;overflow-x:auto;padding:10px 16px;"></div>
+<div id="content" style="flex:1;padding:0 16px 80px;"></div>
+
+<nav class="mobile-nav">
+  <a href="index.html"><i class="fas fa-home"></i>首页</a>
+  <span style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--accent);font-size:11px;font-weight:500;"><i class="fas fa-route"></i>行程</span>
+  <a href="#" id="expensesLink"><i class="fas fa-wallet"></i>记账</a>
+</nav>
+
+<script src="pages/timeline.js"></script>
+</body>
+</html>

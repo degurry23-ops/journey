@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey — AI Travel Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<style>
+  .hero { padding: 80px 0 60px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: center; }
+  .hero-text h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.08; font-weight: normal; }
+  .hero-text .subtitle { font-size: 18px; color: var(--muted-fg); margin-top: 16px; line-height: 1.6; }
+  .countdown-card { position: relative; padding: 40px; border-radius: var(--radius-xl); }
+  .countdown-card h3 { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7; margin-bottom: 12px; }
+  .countdown-card .number { font-family: var(--font-display); font-size: 5rem; line-height: 1; }
+  .countdown-card .unit { font-size: 1.5rem; opacity: 0.8; margin-left: 8px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .stat-item { text-align: center; padding: 24px 16px; }
+  .stat-item .value { font-family: var(--font-display); font-size: 2.5rem; line-height: 1.1; }
+  .stat-item .value.accent { color: var(--accent); } .stat-item .value.green { color: var(--success); }
+  .stat-item .value.purple { color: #8B5CF6; } .stat-item .value.amber { color: var(--warning); }
+  .stat-item .label { font-size: 13px; color: var(--muted-fg); margin-top: 6px; }
+  .trips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .trip-card { display: flex; gap: 16px; align-items: center; cursor: pointer; }
+  .trip-card .icon-box { width: 52px; height: 52px; border-radius: var(--radius); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .trip-card .icon-box.blue { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+  .trip-card .icon-box.green { background: linear-gradient(135deg, #10B981, #34D399); }
+  .trip-card .icon-box.amber { background: linear-gradient(135deg, #F59E0B, #FBBF24); }
+  .trip-card .info { flex: 1; min-width: 0; }
+  .trip-card .name { font-weight: 600; font-size: 16px; color: var(--fg); }
+  .trip-card .dates { font-size: 13px; color: var(--muted-fg); margin-top: 2px; }
+  .journal-scroll { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+  .journal-mini { min-width: 160px; text-align: center; padding: 24px 16px; flex-shrink: 0; cursor: pointer; }
+  @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .hero { padding: 40px 0 30px; } .countdown-card .number { font-size: 3.5rem; } }
+</style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<section class="hero"><div class="container hero-grid"><div class="hero-text">
+  <div class="section-badge"><span class="dot pulse"></span><span class="label" id="todayBadge">Journey</span></div>
+  <h1>准备好下一次<span class="gradient-text">旅行</span>了吗？</h1>
+  <p class="subtitle">AI 帮你规划路线 · 记录每个瞬间 · 珍藏整段旅行<br>一场旅行，只需要一个 App</p>
+  <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="create.html" class="btn btn-primary btn-lg">创建新旅行 <i class="fas fa-arrow-right"></i></a>
+    <a href="journeys.html" class="btn btn-outline btn-lg">查看我的旅行</a>
+  </div>
+</div>
+<div class="hide-mobile" style="position:relative;display:flex;align-items:center;justify-content:center;">
+  <div style="position:relative;width:320px;height:320px;">
+    <div style="position:absolute;inset:0;border:2px dashed rgba(0,82,255,0.2);border-radius:50%;animation:spin 60s linear infinite;"></div>
+    <div style="position:absolute;top:10%;left:10%;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:24px;width:100px;height:100px;box-shadow:0 20px 40px rgba(0,82,255,0.3);" class="animate-float"></div>
+    <div style="position:absolute;bottom:15%;right:10%;background:white;border:1px solid var(--border);border-radius:20px;width:120px;height:80px;box-shadow:0 10px 30px rgba(0,0,0,0.08);" class="animate-float" style="animation-delay:1.5s;"></div>
+    <div style="position:absolute;top:40%;right:5%;width:16px;height:16px;border-radius:50%;background:var(--success);box-shadow:0 0 12px rgba(16,185,129,0.4);" class="pulse-dot"></div>
+  </div>
+</div></div></section>
+
+<section class="dark" style="padding:48px 0;"><div class="container">
+  <div class="section-badge" style="border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);margin-bottom:28px;">
+    <span class="dot" style="background:var(--accent2);"></span><span class="label" style="color:rgba(255,255,255,0.8);">旅行概览</span></div>
+  <div class="stats-grid">
+    <div class="stat-item"><div class="value accent">0</div><div class="label">次旅行</div></div>
+    <div class="stat-item"><div class="value green">0</div><div class="label">进行中</div></div>
+    <div class="stat-item"><div class="value purple">0</div><div class="label">已完成</div></div>
+    <div class="stat-item"><div class="value amber">0</div><div class="label">即将出发</div></div>
+  </div>
+</div></section>
+
+<section style="padding-top:64px;padding-bottom:24px;"><div class="container">
+  <div class="card card-gradient countdown-card animate-in"><div style="position:relative;z-index:2;">
+    <h3>距离下一次旅行</h3>
+    <div style="display:flex;align-items:baseline;gap:8px;margin:8px 0 16px;"><span class="number">--</span><span class="unit">天</span></div>
+    <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:24px;">🌏</span>
+    <div><div style="font-weight:600;font-size:18px;">暂无计划</div><div style="font-size:14px;opacity:0.7;">创建你的第一次旅行吧</div></div></div>
+  </div></div>
+</div></section>
+
+<section style="padding-top:40px;padding-bottom:40px;"><div class="container">
+  <div class="section-header"><div class="section-badge"><span class="dot pulse"></span><span class="label">正在进行</span></div></div>
+  <div class="trips-grid animate-stagger"></div>
+</div></section>
+
+<section style="padding-top:0;padding-bottom:40px;"><div class="container">
+  <div class="section-header"><div class="section-badge"><span class="dot" style="background:var(--warning);"></span><span class="label" style="color:var(--warning);">即将出发</span></div></div>
+  <div class="trips-grid animate-stagger"></div>
+</div></section>
+
+<section style="padding-top:0;padding-bottom:64px;"><div class="container">
+  <div class="section-header"><div class="section-badge"><span class="dot" style="background:#8B5CF6;"></span><span class="label" style="color:#8B5CF6;">旅行日志</span></div></div>
+  <div class="journal-scroll" id="journalScroll"><div class="empty-state" style="min-width:100%;"><i class="fas fa-book"></i><h3>暂无日志</h3><p>完成旅行后会在这里显示</p></div></div>
+</div></section>
+
+<section class="dark" style="padding:64px 0;text-align:center;"><div class="container">
+  <h2 style="font-family:var(--font-display);font-size:clamp(2rem,3vw,3rem);line-height:1.15;margin-bottom:16px;">准备好开始你的<span class="gradient-text">旅程</span>了吗？</h2>
+  <p style="font-size:18px;color:rgba(255,255,255,0.6);margin-bottom:32px;">AI 旅行规划师随时准备为你规划下一段完美旅行</p>
+  <a href="create.html" class="btn btn-primary btn-lg" style="font-size:18px;padding:20px 40px;">免费开始规划 <i class="fas fa-arrow-right"></i></a>
+</div></section>
+
+<footer><div class="container"><p>Made with 💙 Journey · Every Journey Deserves to Be Remembered</p></div></footer>
+
+<script src="components/header.js"></script>
+<script>renderHeader('home');</script>
+<script>
+  var now = new Date();
+  var days = ['日','一','二','三','四','五','六'];
+  document.getElementById('todayBadge').textContent = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 · 星期'+days[now.getDay()];
+</script>
+<script src="pages/home.js"></script>
+</body>
+</html>

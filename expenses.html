@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>旅行记账 — Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<style>
+  @media (max-width: 768px) { body { font-size: 14px; } }
+</style>
+</head>
+<body style="min-height:100vh;">
+
+<header style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;">
+  <a href="#" id="backLink" style="color:var(--muted-fg);text-decoration:none;font-size:14px;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <h1 style="font-family:var(--font-display);font-size:1.1rem;">旅行<span class="gradient-text">记账</span></h1>
+  <div style="width:48px;"></div>
+</header>
+
+<div id="content" style="max-width:600px;margin:0 auto;padding:16px;"></div>
+
+<button id="addBtn" style="position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:16px;background:var(--accent);color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,82,255,.3);z-index:50;">+</button>
+
+<script src="pages/expenses.js"></script>
+</body>
+</html>
