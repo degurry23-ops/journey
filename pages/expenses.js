@@ -17,6 +17,7 @@ safeRender(function() {
   var budgetPerPerson = parseInt(trip.budget) || 0;
   var budgetTotal = budgetPerPerson * (trip.members || 1);
   var budgetUsed = budgetTotal > 0 ? Math.round(total / budgetTotal * 100) : 0;
+  var cur = getCurrency(trip.destination);
   var catDefs = { '餐饮': '🍜', '交通': '🚇', '住宿': '🏨', '门票': '🎫', '购物': '🛍', '其他': '💊' };
 
   var cats = {};
@@ -29,8 +30,8 @@ safeRender(function() {
     var maxCat = Math.max.apply(Math, Object.values(cats).map(function(c) { return c.total; }).concat([1]));
     var h = '';
     h += '<div style="background:var(--fg);color:#fff;border-radius:16px;padding:24px;margin-bottom:16px;">';
-    h += '<div style="font-size:13px;opacity:.7;">总消费</div><div style="font-size:2.5rem;font-weight:700;margin:4px 0;">¥' + total.toLocaleString() + '</div>';
-    h += '<div style="display:flex;gap:20px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);"><div><span style="font-size:11px;opacity:.5;">人均</span><div style="font-weight:700;">¥' + Math.round(pp).toLocaleString() + '</div></div><div><span style="font-size:11px;opacity:.5;">笔数</span><div style="font-weight:700;">' + expenses.length + '</div></div></div>';
+    h += '<div style="font-size:13px;opacity:.7;">总消费</div><div style="font-size:2.5rem;font-weight:700;margin:4px 0;">' + cur.sym + total.toLocaleString() + '</div>';
+    h += '<div style="display:flex;gap:20px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);"><div><span style="font-size:11px;opacity:.5;">人均</span><div style="font-weight:700;">' + cur.sym + Math.round(pp).toLocaleString() + '</div></div><div><span style="font-size:11px;opacity:.5;">笔数</span><div style="font-weight:700;">' + expenses.length + '</div></div></div>';
     // Budget alert
     if (budgetTotal > 0) {
       var alertColor = budgetUsed >= 100 ? '#EF4444' : budgetUsed >= 80 ? '#F59E0B' : '#10B981';
@@ -39,7 +40,7 @@ safeRender(function() {
       h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;opacity:.7;">' + alertIcon + ' 预算使用</span><span style="font-size:13px;font-weight:600;color:' + alertColor + ';">' + budgetUsed + '%</span></div>';
       h += '<div style="height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;">';
       h += '<div style="height:100%;width:' + Math.min(budgetUsed, 100) + '%;background:' + alertColor + ';border-radius:3px;transition:width .5s;"></div></div>';
-      h += '<div style="font-size:11px;opacity:.5;margin-top:4px;">总预算 ¥' + budgetTotal.toLocaleString() + '（' + (trip.members || 1) + '人 × ¥' + budgetPerPerson.toLocaleString() + '/人）</div></div>';
+      h += '<div style="font-size:11px;opacity:.5;margin-top:4px;">总预算 ' + cur.sym + budgetTotal.toLocaleString() + '（' + (trip.members || 1) + '人 × ' + cur.sym + budgetPerPerson.toLocaleString() + '/人）</div></div>';
     }
     h += '</div>';
 
@@ -47,7 +48,7 @@ safeRender(function() {
       h += '<div class="card" style="margin-bottom:16px;"><h3 style="font-size:12px;color:var(--muted-fg);margin-bottom:12px;">分类统计</h3>';
       Object.entries(cats).forEach(function(entry) {
         var k = entry[0], v = entry[1];
-        h += '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;"><span>' + v.icon + ' ' + k + '</span><span style="font-weight:600;">¥' + v.total.toLocaleString() + '</span></div><div style="height:6px;background:var(--muted);border-radius:3px;"><div style="height:6px;border-radius:3px;background:var(--accent);width:' + (v.total / maxCat * 100) + '%;"></div></div></div>';
+        h += '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;"><span>' + v.icon + ' ' + k + '</span><span style="font-weight:600;">' + cur.sym + v.total.toLocaleString() + '</span></div><div style="height:6px;background:var(--muted);border-radius:3px;"><div style="height:6px;border-radius:3px;background:var(--accent);width:' + (v.total / maxCat * 100) + '%;"></div></div></div>';
       });
       h += '</div>';
     }
@@ -69,9 +70,9 @@ safeRender(function() {
       expenses.slice().reverse().forEach(function(e) {
         h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">';
         h += '<span style="font-size:22px;">' + (catDefs[e.cat] || '💰') + '</span>';
-        h += '<div style="flex:1;"><div style="font-weight:600;font-size:14px;">' + (e.cat || '') + (e.note ? ' · ' + e.note : '') + '</div>';
+        h += '<div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (e.cat || '') + (e.note ? ' · ' + e.note : '') + '</div>';
         h += '<div style="font-size:11px;color:var(--muted-fg);">' + (e.payer || '我') + ' · ' + (e.date || '') + '</div></div>';
-        h += '<span style="font-weight:700;">¥' + e.amount.toLocaleString() + '</span>';
+        h += '<span style="font-weight:700;white-space:nowrap;">' + cur.sym + Number(e.amount).toLocaleString() + '</span>';
         h += '<span onclick="removeExpense(\'' + e.id + '\')" style="color:var(--muted-fg);cursor:pointer;padding:4px;">✕</span></div>';
       });
     }
@@ -83,9 +84,9 @@ safeRender(function() {
     var area = document.getElementById('listArea');
     if (!area) return;
     var h = '<div class="card"><h3 style="font-size:12px;color:var(--muted-fg);margin-bottom:16px;">AA 分摊</h3>';
-    h += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span>总消费</span><span style="font-weight:700;">¥' + total.toLocaleString() + '</span></div>';
+    h += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span>总消费</span><span style="font-weight:700;">' + cur.sym + total.toLocaleString() + '</span></div>';
     h += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span>人数</span><span style="font-weight:700;">' + (trip.members || 1) + ' 人</span></div>';
-    h += '<div style="display:flex;justify-content:space-between;padding:10px 0;"><span>每人应付</span><span style="font-weight:700;color:var(--accent);font-size:18px;">¥' + Math.round(pp).toLocaleString() + '</span></div></div>';
+    h += '<div style="display:flex;justify-content:space-between;padding:10px 0;"><span>每人应付</span><span style="font-weight:700;color:var(--accent);font-size:18px;">' + cur.sym + Math.round(pp).toLocaleString() + '</span></div></div>';
     area.innerHTML = h;
   };
 

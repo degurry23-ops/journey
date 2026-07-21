@@ -245,6 +245,26 @@ function daysBetween(a,b) { return Math.ceil((new Date(b)-new Date(a))/86400000)
 function formatMoney(n) { return '¥'+Number(n).toLocaleString(); }
 function genId() { return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7); }
 
+// Currency by destination
+var CURRENCY_MAP = {
+  '日本东京': { sym: '¥', code: 'JPY', rate: 0.05 },   // 1 JPY ≈ 0.05 CNY
+  '日本':   { sym: '¥', code: 'JPY', rate: 0.05 },
+  '韩国首尔': { sym: '₩', code: 'KRW', rate: 0.005 },  // 1 KRW ≈ 0.005 CNY
+  '韩国':   { sym: '₩', code: 'KRW', rate: 0.005 },
+  '泰国曼谷': { sym: '฿', code: 'THB', rate: 0.2 },    // 1 THB ≈ 0.2 CNY
+  '泰国':   { sym: '฿', code: 'THB', rate: 0.2 }
+};
+function getCurrency(dest) {
+  for (var k in CURRENCY_MAP) {
+    if (dest && dest.indexOf(k.replace(/^(日本|韩国|泰国|四川|云南)/,'')) >= 0) return CURRENCY_MAP[k];
+  }
+  return { sym: '¥', code: 'CNY', rate: 1 };
+}
+function formatAmount(amount, dest) {
+  var cur = getCurrency(dest);
+  return cur.sym + Number(amount || 0).toLocaleString();
+}
+
 // AI mock trip generator
 function generateTripPlan(destination, startDate, numDays, members, budget, preferences) {
   const placesDb = {
