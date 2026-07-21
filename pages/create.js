@@ -18,10 +18,13 @@ safeRender(function() {
 
   window.quickTemplate = function(dest, days, members, budget, prefs) {
     startChat();
-    answers = { destination: dest, days: '' + days, members: '' + members, budget: '' + budget, preferences: prefs };
-    // Skip to generation
+    // Default start date to 2 weeks from now
+    var d = new Date();
+    d.setDate(d.getDate() + 14);
+    var defaultDate = d.toISOString().split('T')[0];
+    answers = { destination: dest, startDate: defaultDate, days: '' + days, members: '' + members, budget: '' + budget, preferences: prefs };
     step = steps.length - 1;
-    addChat(dest + ' · ' + days + '天 · ' + members + '人', 'user');
+    addChat(dest + ' · ' + days + '天 · ' + members + '人 · ' + defaultDate, 'user');
     generateTrip();
   };
 
@@ -82,20 +85,15 @@ safeRender(function() {
   function updateInput() {
     var s = steps[step];
     var isChipStep = s.type === 'chips' || s.type === 'styleChips';
-    // Toggle visibility of input elements individually (don't hide parent)
-    answer.style.display = isChipStep ? 'none' : '';
-    sendBtn.style.display = isChipStep ? 'none' : '';
-    if (stepIcon) stepIcon.style.display = isChipStep ? 'none' : '';
-    if (isChipStep) {
-      if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 点击选择';
-    } else {
-      answer.type = s.type || 'text';
-      answer.placeholder = s.placeholder;
-      if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 按 Enter 发送';
-    }
+    answer.type = isChipStep ? 'text' : (s.type || 'text');
+    answer.placeholder = isChipStep ? '点击上方选项，或直接输入' : s.placeholder;
+    answer.style.display = '';
+    sendBtn.style.display = '';
+    if (stepIcon) stepIcon.style.display = '';
+    if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步' + (isChipStep ? ' · 点击选项或输入后回车' : ' · 按 Enter 发送');
     if (stepIcon) stepIcon.textContent = s.icon;
     if (progress) progress.style.width = (step / steps.length * 100) + '%';
-    if (!isChipStep) answer.focus();
+    answer.focus();
   }
 
   function addChat(msg, type, extras) {
@@ -104,11 +102,10 @@ safeRender(function() {
     d.className = type === 'ai' ? 'chat-ai' : 'chat-user';
     var html = type === 'ai' ? '<div class="avatar"><i class="fas fa-robot"></i></div>' : '';
     html += '<div class="bubble">' + msg;
-    // Add suggestion chips/cards
     if (extras && extras.suggestions) {
       html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">';
       extras.suggestions.forEach(function(s) {
-        html += '<span onclick="quickPick(\'' + s.value + '\')" style="padding:8px 14px;border-radius:999px;font-size:13px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);">' + s.label + '</span>';
+        html += '<span data-pick="' + s.value + '" class="pick-chip" style="padding:8px 14px;border-radius:999px;font-size:13px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);">' + s.label + '</span>';
       });
       html += '</div>';
     }
@@ -117,7 +114,7 @@ safeRender(function() {
       extras.chips.forEach(function(c) {
         var label = typeof c === 'string' ? c : (c.icon + ' ' + c.label);
         var val = typeof c === 'string' ? c : c.label;
-        html += '<span onclick="quickPick(\'' + val + '\')" style="padding:10px 16px;border-radius:var(--radius);font-size:14px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);display:inline-flex;align-items:center;gap:6px;">' + label + '</span>';
+        html += '<span data-pick="' + val + '" class="pick-chip" style="padding:10px 16px;border-radius:var(--radius);font-size:14px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);display:inline-flex;align-items:center;gap:6px;">' + label + '</span>';
       });
       html += '</div>';
     }
@@ -127,11 +124,20 @@ safeRender(function() {
     chat.scrollTop = chat.scrollHeight;
   }
 
-  window.quickPick = function(val) {
-    if (!answer) return;
+  // Event delegation for chip clicks
+  chat.addEventListener('click', function(e) {
+    var chip = e.target.closest('.pick-chip');
+    if (!chip) return;
+    var val = chip.getAttribute('data-pick');
+    if (!val || !answer) return;
     answer.value = val;
-    send();
-  };
+    // Highlight selected chip
+    var allChips = chat.querySelectorAll('.pick-chip');
+    allChips.forEach(function(c) { c.style.background = 'var(--muted)'; c.style.color = 'var(--fg)'; c.style.borderColor = 'var(--border)'; });
+    chip.style.background = 'var(--accent)'; chip.style.color = '#fff'; chip.style.borderColor = 'var(--accent)';
+    // Auto submit after brief highlight
+    setTimeout(function() { send(); }, 200);
+  });
 
   async function send() {
     if (!answer) return;
@@ -219,7 +225,9 @@ safeRender(function() {
         tripDays = plan.days || [];
       }
 
-      var endDate = new Date(answers.startDate);
+      var startDate = answers.startDate || new Date().toISOString().split('T')[0];
+      var endDate = new Date(startDate);
+      if (isNaN(endDate.getTime())) endDate = new Date(); // fallback
       endDate.setDate(endDate.getDate() + numDays - 1);
 
       window._tripData = {
