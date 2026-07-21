@@ -30,7 +30,7 @@ safeRender(function() {
   function render(list) {
     var c = document.getElementById('tripList');
     if (!list.length) {
-      c.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>暂无旅行</h3><p>开始你的第一段旅程吧</p><a href="create.html" class="btn btn-primary">+ 创建新旅行</a></div>';
+      c.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>暂无旅行</h3><p>开始你的第一段旅程吧</p><a href="create.html" class="empty-state-action"><i class="fas fa-magic"></i><h4>AI 智能规划</h4><p>让 AI 帮你定制完美行程</p></a><a href="create.html" class="btn btn-primary" style="margin-top:12px;">+ 创建新旅行</a></div>';
       return;
     }
     c.innerHTML = list.map(function(t) {

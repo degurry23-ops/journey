@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <script src="storage.js"></script>
+<script src="api-bridge.js"></script>
 <script src="utils.js"></script>
 <style>
   .cover { background: linear-gradient(135deg, var(--fg), #1E293B); color: #fff; padding: 80px 0 32px; position: relative; overflow: hidden; }
@@ -47,8 +48,28 @@
 </div>
 
 <main class="container" style="padding:32px 0 80px;">
-  <h2 style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:20px;">行程安排</h2>
+  <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:24px;">
+    <h2 style="font-family:var(--font-display);font-size:1.5rem;">行程安排</h2>
+    <span id="weatherSummary" style="font-size:14px;color:var(--muted-fg);"></span>
+  </div>
   <div id="days"></div>
+
+  <div id="membersSection" class="card" style="margin-top:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted-fg);">👥 同行伙伴</h3>
+      <button class="btn btn-sm btn-outline" onclick="inviteMember()"><i class="fas fa-user-plus"></i> 邀请</button>
+    </div>
+    <div id="membersList" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+  </div>
+
+  <div id="packingSection" class="card" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted-fg);">🎒 行李清单</h3>
+      <button class="btn btn-sm btn-outline" onclick="generatePackingList()"><i class="fas fa-magic"></i> AI 生成</button>
+    </div>
+    <div id="packingList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:8px;"></div>
+  </div>
+
   <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;">
     <a href="#" class="btn btn-primary btn-full btn-lg" id="actionBtn">✈️ 开始旅行</a>
     <button class="btn btn-outline btn-lg btn-full" id="deleteTripBtn" style="color:var(--danger);border-color:var(--danger);">🗑 删除行程</button>

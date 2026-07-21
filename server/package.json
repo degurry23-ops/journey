@@ -1,0 +1,16 @@
+{
+  "name": "journey-server",
+  "version": "1.0.0",
+  "description": "Journey AI Travel Journal — Backend API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0"
+  }
+}

@@ -2,15 +2,12 @@
 
 safeRender(function() {
   var trip = getTripById(getParam('trip'));
-  if (!trip) {
-    document.body.innerHTML = '<div class="empty-state" style="padding-top:100px;"><i class="fas fa-map"></i><h3>旅行不存在</h3><a href="index.html" class="btn btn-primary">返回首页</a></div>';
-    return;
-  }
+  if (!trip) { showPageError('fa-map', '旅行不存在', '找不到这个行程', 'index.html', '返回首页'); return; }
 
   var DAY_COLORS = ['#0052FF', '#4D7CFF', '#F59E0B', '#8B5CF6', '#10B981', '#EC4899', '#06B6D4'];
   var allPlaces = [];
 
-  if (trip.days) {
+  if (trip.days instanceof Array) {
     trip.days.forEach(function(d, di) {
       if (d.places) {
         d.places.forEach(function(p) {
@@ -91,6 +88,9 @@ safeRender(function() {
   };
 
   // Back link
-  var backLink = document.querySelector('header a');
-  if (backLink) backLink.href = 'trip-detail.html?id=' + trip.id;
+  var backLink = document.getElementById('backLink');
+  if (backLink) {
+    backLink.href = 'trip-detail.html?id=' + trip.id;
+    backLink.onclick = function(e) { e.preventDefault(); window.location.href = 'trip-detail.html?id=' + trip.id; };
+  }
 });

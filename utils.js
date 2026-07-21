@@ -20,7 +20,7 @@ function showToast(msg, type) {
     animation:fadeInDown 0.3s ease-out;
     max-width:90vw;
   `;
-  toast.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;
+  toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + msg + '<div class="toast-progress"></div>';
   document.body.appendChild(toast);
   setTimeout(function() {
     toast.style.opacity = '0';
@@ -53,16 +53,34 @@ function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+/* ── Page Error Display (non-destructive) ── */
+function showPageError(icon, title, msg, linkHref, linkText) {
+  // Hide existing page content, preserve scripts/styles
+  var contentNodes = document.querySelectorAll('body > section, body > .container, body > main, body > header, body > .mobile-nav');
+  for (var i = 0; i < contentNodes.length; i++) { contentNodes[i].style.display = 'none'; }
+  var err = document.createElement('div');
+  err.className = 'empty-state';
+  err.style.cssText = 'padding-top:100px;max-width:400px;margin:0 auto;text-align:center;';
+  err.innerHTML = '<i class="fas ' + icon + '"></i><h3>' + title + '</h3>' +
+    (msg ? '<p>' + msg + '</p>' : '') +
+    '<a href="' + linkHref + '" class="btn btn-primary">' + (linkText || '返回首页') + '</a>';
+  document.body.insertBefore(err, document.body.firstChild);
+}
+
 /* ── Error Boundary ── */
 function safeRender(fn) {
   try {
     fn();
   } catch (e) {
+    var stackLines = (e.stack || '').split('\n');
+    var location = stackLines[1] || '';
+    location = location.trim().replace(/^at\s+/, '');
     document.body.innerHTML = `
-      <div class="empty-state" style="padding-top:100px;">
+      <div class="empty-state" style="padding-top:80px;">
         <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>
         <h3>页面加载出错</h3>
-        <p style="color:var(--muted-fg);margin-bottom:20px;">${e.message}</p>
+        <p style="color:var(--muted-fg);margin-bottom:8px;">${e.message}</p>
+        <p style="font-family:var(--font-mono);font-size:11px;color:var(--muted-fg);max-width:600px;margin:0 auto 20px;word-break:break-all;">${location}</p>
         <a href="index.html" class="btn btn-primary">返回首页</a>
         <button class="btn btn-outline" onclick="location.reload()" style="margin-top:8px;">刷新重试</button>
       </div>`;
@@ -98,3 +116,57 @@ function deletePhoto(tripId, photoId) {
   if (all[tripId]) all[tripId] = all[tripId].filter(function(p) { return p.id !== photoId; });
   localStorage.setItem(PHOTO_STORE_KEY, JSON.stringify(all));
 }
+
+/* ── Page Transition ── */
+(function() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { document.body.classList.add('page-transition'); });
+  } else {
+    document.body.classList.add('page-transition');
+  }
+})();
+
+/* ── Skeleton Loader ── */
+function showSkeleton(containerId, count) {
+  count = count || 3;
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var html = '';
+  for (var i = 0; i < count; i++) {
+    html += '<div class="skeleton skeleton-card"></div>';
+  }
+  el.innerHTML = html;
+}
+
+function hideSkeleton(containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.querySelectorAll('.skeleton, .skeleton-card, .skeleton-title, .skeleton-text').forEach(function(s) { s.remove(); });
+}
+
+/* ── Ripple Effect ── */
+function addRipple(el) {
+  el.classList.add('ripple');
+}
+
+/* ── Navigate with transition ── */
+function navigateTo(url) {
+  document.body.style.opacity = '0';
+  document.body.style.transition = 'opacity 0.15s ease-out';
+  setTimeout(function() { window.location.href = url; }, 150);
+}
+
+/* ── Init UI Enhancements ── */
+(function() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUI);
+  } else {
+    initUI();
+  }
+  function initUI() {
+    // Add ripple to all buttons
+    document.querySelectorAll('.btn').forEach(function(btn) { btn.classList.add('ripple'); });
+    // Add page transition class
+    document.body.classList.add('page-transition');
+  }
+})();

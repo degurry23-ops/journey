@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <script src="storage.js"></script>
+<script src="api-bridge.js"></script>
 <script src="utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <style>
@@ -30,7 +31,7 @@
 <body>
 
 <section class="cover"><div class="container container-narrow" style="position:relative;z-index:2;">
-  <a href="trip-detail.html" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;margin-bottom:24px;display:inline-block;"><i class="fas fa-arrow-left"></i> 返回</a>
+  <a href="#" id="backLink" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;margin-bottom:24px;display:inline-block;"><i class="fas fa-arrow-left"></i> 返回</a>
   <p style="font-family:var(--font-mono);font-size:12px;opacity:.5;text-transform:uppercase;letter-spacing:.15em;margin-bottom:12px;" id="coverDates"></p>
   <h1 style="font-family:var(--font-display);font-size:clamp(2.5rem,4vw,3.5rem);line-height:1.15;" id="coverTitle"></h1>
   <div class="separator"></div>

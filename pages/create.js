@@ -20,17 +20,23 @@ safeRender(function() {
   var stepIcon = document.getElementById('stepIcon');
   var stepHint = document.getElementById('stepHint');
 
+  if (!chat || !answer || !sendBtn) {
+    document.body.innerHTML = '<div class="empty-state" style="padding-top:100px;"><i class="fas fa-exclamation-triangle"></i><h3>页面加载异常</h3><a href="index.html" class="btn btn-primary">返回首页</a></div>';
+    return;
+  }
+
   function updateInput() {
     var s = steps[step];
     answer.type = s.type || 'text';
     answer.placeholder = s.placeholder;
-    stepIcon.textContent = s.icon;
-    stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 按 Enter 发送';
-    progress.style.width = (step / steps.length * 100) + '%';
+    if (stepIcon) stepIcon.textContent = s.icon;
+    if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 按 Enter 发送';
+    if (progress) progress.style.width = (step / steps.length * 100) + '%';
     answer.focus();
   }
 
   function addChat(msg, type) {
+    if (!chat) return;
     var d = document.createElement('div');
     d.className = type === 'ai' ? 'chat-ai' : 'chat-user';
     if (type === 'ai') {
@@ -43,6 +49,7 @@ safeRender(function() {
   }
 
   async function send() {
+    if (!answer) return;
     var val = answer.value.trim();
     if (!val) return;
     var s = steps[step];
@@ -56,15 +63,15 @@ safeRender(function() {
       answer.value = '';
     } else {
       addChat('好的！正在为你规划 ' + answers.destination + ' 的 ' + answers.days + ' 天旅行...', 'ai');
-      progress.style.width = '100%';
-      document.querySelector('footer').innerHTML = '<div class="container" style="text-align:center;padding:20px;"><p style="color:var(--muted-fg);">🤖 AI 正在为您规划...</p></div>';
+      if (progress) progress.style.width = '100%';
+      var footer = document.querySelector('footer');
+      if (footer) footer.innerHTML = '<div class="container" style="text-align:center;padding:20px;"><p style="color:var(--muted-fg);">🤖 AI 正在为您规划...</p></div>';
 
       var numDays = parseInt(answers.days || 5);
       var numMembers = parseInt(answers.members || 1);
       var numBudget = parseInt(answers.budget || 5000);
       var tripDays = null;
 
-      // Try AI
       try {
         var aiResult = await callAITripPlan({
           destination: answers.destination,
@@ -84,44 +91,35 @@ safeRender(function() {
               places: (d.places || []).map(function(p) {
                 return {
                   id: 'ai-p' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-                  name: p.name,
-                  cat: p.category || p.cat || '景点',
+                  name: p.name, cat: p.category || p.cat || '景点',
                   time: p.time_slot || p.time || '09:00',
-                  duration: p.duration || '1h',
-                  fee: p.fee || '免费',
-                  lat: p.lat || null,
-                  lng: p.lng || null
+                  duration: p.duration || '1h', fee: p.fee || '免费',
+                  lat: p.lat || null, lng: p.lng || null
                 };
               })
             };
           });
         }
-      } catch (e) { /* fallback to mock */ }
+      } catch (e) {}
 
       if (!tripDays || !tripDays.length) {
-        tripDays = generateTripPlan(answers.destination, answers.startDate, numDays, numMembers, numBudget, answers.preferences).days;
+        var plan = generateTripPlan(answers.destination, answers.startDate, numDays, numMembers, numBudget, answers.preferences);
+        tripDays = plan.days || [];
       }
 
       var endDate = new Date(answers.startDate);
       endDate.setDate(endDate.getDate() + numDays - 1);
 
       window._tripData = {
-        name: answers.destination + '之旅',
-        destination: answers.destination,
-        startDate: answers.startDate,
-        endDate: endDate.toISOString().split('T')[0],
-        members: numMembers,
-        days: tripDays,
-        budget: numBudget,
-        emoji: '🌏',
-        readiness: 30
+        name: answers.destination + '之旅', destination: answers.destination,
+        startDate: answers.startDate, endDate: endDate.toISOString().split('T')[0],
+        members: numMembers, days: tripDays, budget: numBudget, emoji: '🌏', readiness: 30
       };
 
       var html = '<div class="container" style="text-align:center;padding:40px 0;">';
       html += '<div style="font-size:64px;margin-bottom:16px;">🎉</div>';
       html += '<h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:8px;">行程已生成！</h2>';
       html += '<p style="color:var(--muted-fg);margin-bottom:8px;">' + answers.destination + '之旅 · ' + numDays + '天 · ' + answers.startDate + ' 出发</p>';
-      html += '<p style="color:var(--accent);font-size:12px;margin-bottom:24px;">' + (tripDays.length && tripDays[0].id && tripDays[0].id.indexOf('ai-') === 0 ? '🤖 AI 生成' : '📋 模板生成') + '</p>';
 
       for (var d = 0; d < tripDays.length; d++) {
         var day = tripDays[d];
@@ -129,19 +127,22 @@ safeRender(function() {
         html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;"><span class="tag tag-blue">Day ' + (d + 1) + '</span><span style="font-size:13px;color:var(--muted-fg);">' + (day.weather || '☀️ 晴 25°C') + '</span></div>';
         for (var p = 0; p < day.places.length; p++) {
           var pl = day.places[p];
-          var catIcon = pl.cat === '美食' ? '🍜' : pl.cat === '咖啡' ? '☕' : pl.cat === '购物' ? '🛍' : pl.cat === '住宿' ? '🏨' : '📍';
-          html += '<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">' + (pl.time || '09:00') + '</span><span>' + catIcon + '</span><span>' + pl.name + '</span></div>';
+          var ci = pl.cat === '美食' ? '🍜' : pl.cat === '咖啡' ? '☕' : pl.cat === '购物' ? '🛍' : pl.cat === '住宿' ? '🏨' : '📍';
+          html += '<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">' + (pl.time || '09:00') + '</span><span>' + ci + '</span><span>' + pl.name + '</span></div>';
         }
         html += '</div>';
       }
       html += '<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
       html += '<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
-      document.querySelector('main').innerHTML = html;
-      document.querySelector('footer').style.display = 'none';
+
+      var main = document.querySelector('main');
+      if (main) main.innerHTML = html;
+      if (footer) footer.style.display = 'none';
     }
   }
 
   window.confirmTrip = function() {
+    if (!window._tripData) return;
     var t = addTrip(window._tripData);
     location.href = 'trip-detail.html?id=' + t.id;
   };

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <script src="storage.js"></script>
+<script src="api-bridge.js"></script>
 <script src="utils.js"></script>
 <style>
   .hero { padding: 80px 0 60px; }
@@ -74,10 +75,16 @@
 
 <section style="padding-top:64px;padding-bottom:24px;"><div class="container">
   <div class="card card-gradient countdown-card animate-in"><div style="position:relative;z-index:2;">
-    <h3>距离下一次旅行</h3>
-    <div style="display:flex;align-items:baseline;gap:8px;margin:8px 0 16px;"><span class="number">--</span><span class="unit">天</span></div>
-    <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:24px;">🌏</span>
-    <div><div style="font-weight:600;font-size:18px;">暂无计划</div><div style="font-size:14px;opacity:0.7;">创建你的第一次旅行吧</div></div></div>
+    <h3 id="countdownLabel">距离下一次旅行</h3>
+    <div style="display:flex;align-items:baseline;gap:8px;margin:8px 0 16px;"><span class="number">--</span><span class="unit">天<span id="countdownDest" style="font-size:0.5em;opacity:0.7;margin-left:8px;"></span></span></div>
+    <div style="display:flex;align-items:center;gap:12px;"><span id="countdownEmoji" style="font-size:24px;">🌏</span>
+    <div><div id="countdownTripName" style="font-weight:600;font-size:18px;">暂无计划</div><div id="countdownTripSub" style="font-size:14px;opacity:0.7;">创建你的第一次旅行吧</div></div></div>
+    <div id="countdownProgress" style="margin-top:16px;display:none;align-items:center;gap:12px;">
+      <div style="flex:1;background:rgba(255,255,255,0.15);border-radius:999px;height:6px;overflow:hidden;">
+        <div class="animate-progress" style="width:0%;height:100%;background:white;border-radius:999px;"></div>
+      </div>
+      <span id="countdownPct" style="font-size:14px;">0%</span>
+    </div>
   </div></div>
 </div></section>
 

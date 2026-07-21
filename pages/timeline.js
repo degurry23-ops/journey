@@ -3,11 +3,9 @@
 safeRender(function() {
   var trip = getTripById(getParam('trip'));
   var dayId = getParam('day');
+  if (!trip || !dayId) { showPageError('fa-route', '数据不存在', '请检查链接是否正确', 'index.html', '返回首页'); return; }
 
-  if (!trip || !dayId) {
-    document.body.innerHTML = '<div class="empty-state" style="padding-top:100px;"><i class="fas fa-route"></i><h3>数据不存在</h3><p>找不到该行程或日程</p><a href="index.html" class="btn btn-primary">返回首页</a></div>';
-    return;
-  }
+  if (!(trip.days instanceof Array)) trip.days = [];
 
   var dayIdx = trip.days.findIndex(function(d) { return d.id === dayId; });
   var day = trip.days[dayIdx];
@@ -16,36 +14,30 @@ safeRender(function() {
     return;
   }
 
-  // Set links
-  document.getElementById('backLink').href = 'trip-detail.html?id=' + trip.id;
-  var mapLink = document.getElementById('mapLink');
-  if (mapLink) mapLink.href = 'map.html?trip=' + trip.id;
-  var expensesLink = document.getElementById('expensesLink');
-  if (expensesLink) expensesLink.href = 'expenses.html?trip=' + trip.id;
-
-  // Day title
-  document.getElementById('dayTitle').innerHTML = '<div style="font-weight:600;">' + trip.destination + '之旅</div><div style="font-size:12px;color:var(--muted-fg);">Day ' + (dayIdx + 1) + ' · ' + (day.date || trip.startDate) + '</div>';
-
-  // Day switcher
-  var switcher = document.getElementById('daySwitcher');
-  if (switcher) {
-    switcher.innerHTML = trip.days.map(function(d, i) {
-      return '<a href="day-timeline.html?trip=' + trip.id + '&day=' + d.id + '" style="padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500;text-decoration:none;' + (d.id === dayId ? 'background:var(--accent);color:#fff;' : 'background:var(--muted);color:var(--muted-fg);') + '">Day ' + (i + 1) + '</a>';
-    }).join('');
+  var el;
+  el = document.getElementById('backLink');
+  if (el) {
+    el.href = 'trip-detail.html?id=' + trip.id;
+    el.onclick = function(e) { e.preventDefault(); window.location.href = 'trip-detail.html?id=' + trip.id; };
   }
+  el = document.getElementById('mapLink'); if (el) el.href = 'map.html?trip=' + trip.id;
+  el = document.getElementById('expensesLink'); if (el) el.href = 'expenses.html?trip=' + trip.id;
 
-  // Content
+  el = document.getElementById('dayTitle');
+  if (el) el.innerHTML = '<div style="font-weight:600;">' + (trip.destination || '') + '之旅</div><div style="font-size:12px;color:var(--muted-fg);">Day ' + (dayIdx + 1) + ' · ' + (day.date || trip.startDate) + '</div>';
+
+  el = document.getElementById('daySwitcher');
+  if (el) el.innerHTML = trip.days.map(function(d, i) {
+    return '<a href="day-timeline.html?trip=' + trip.id + '&day=' + d.id + '" style="padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500;text-decoration:none;' + (d.id === dayId ? 'background:var(--accent);color:#fff;' : 'background:var(--muted);color:var(--muted-fg);') + '">Day ' + (i + 1) + '</a>';
+  }).join('');
+
   var catIcon = { '景点': '🏯', '美食': '🍜', '咖啡': '☕', '购物': '🛍', '住宿': '🏨', '交通': '🚇', '其他': '📍' };
   var totalExp = (trip.expenses || []).filter(function(e) { return e.dayId === dayId; }).reduce(function(s, e) { return s + e.amount; }, 0);
+  var weatherEmoji = day.weather && day.weather.indexOf('雨') >= 0 ? '🌧' : day.weather && day.weather.indexOf('多云') >= 0 ? '⛅' : '☀️';
 
   var html = '';
-
-  // Weather
-  var weatherEmoji = day.weather && day.weather.indexOf('雨') >= 0 ? '🌧' : day.weather && day.weather.indexOf('多云') >= 0 ? '⛅' : '☀️';
   html += '<div class="weather-bar" style="margin-bottom:20px;"><span style="font-size:32px;">' + weatherEmoji + '</span><div><div style="font-weight:600;">' + (day.weather || '☀️ 晴 25°C') + '</div><div style="font-size:13px;opacity:.85;margin-top:2px;">💡 ' + (day.tip || '今天天气不错，适合出行~') + '</div></div></div>';
-
-  // Timeline
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-family:var(--font-display);font-size:1.2rem;">今日<span class="gradient-text">行程</span></h2><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'addForm\').style.display=\'block\'"><i class="fas fa-plus"></i> 添加</button></div>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-family:var(--font-display);font-size:1.2rem;">今日<span class="gradient-text">行程</span></h2><button class="btn btn-primary btn-sm" onclick="showAddForm()"><i class="fas fa-plus"></i> 添加</button></div>';
 
   if (!day.places || !day.places.length) {
     html += '<div class="empty-state" style="padding:30px;"><i class="fas fa-map-pin"></i><h3>还没有安排</h3><p>点击上方按钮添加第一个地点</p></div>';
@@ -64,23 +56,19 @@ safeRender(function() {
       html += '<span class="tag tag-blue">' + (p.cat || '景点') + '</span></div>';
       html += '<span style="font-size:12px;color:var(--muted-fg);">' + (p.duration || '1h') + '</span></div>';
       html += '<div style="font-size:12px;color:var(--muted-fg);margin-top:4px;margin-left:48px;">' + (p.fee || '免费');
-      if (p.lat) {
-        html += ' · <a href="https://uri.amap.com/marker?position=' + p.lng + ',' + p.lat + '&name=' + encodeURIComponent(p.name) + '" target="_blank" style="color:var(--accent);text-decoration:none;">📍 导航</a>';
-      }
-      html += '<button onclick="removePlace(\'' + p.id + '\')" style="float:right;background:none;border:none;color:var(--muted-fg);cursor:pointer;font-size:14px;padding:4px 8px;">✕</button>';
+      if (p.lat) html += ' · <a href="https://uri.amap.com/marker?position=' + p.lng + ',' + p.lat + '&name=' + encodeURIComponent(p.name) + '" target="_blank" style="color:var(--accent);text-decoration:none;">📍 导航</a>';
+      html += '<button onclick="removePlace(\'' + p.id + '\')" style="float:right;background:none;border:none;color:var(--muted-fg);cursor:pointer;font-size:14px;">✕</button>';
       html += '</div></div></div>';
     });
     html += '</div>';
   }
 
-  // Today's spending
   if (totalExp > 0) {
     html += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">💰</span><span style="font-size:14px;color:var(--muted-fg);">今日消费</span></div><div style="display:flex;align-items:center;gap:12px;"><span style="font-weight:700;font-size:16px;">¥' + totalExp.toLocaleString() + '</span><a href="expenses.html?trip=' + trip.id + '" class="btn btn-primary btn-sm">+ 记账</a></div></div>';
   }
 
-  // Add place form
-  html += '<div id="addForm" class="sheet" style="display:none;">';
-  html += '<div class="sheet-handle"></div>';
+  // Add place form (hidden)
+  html += '<div id="addForm" class="sheet" style="display:none;"><div class="sheet-handle"></div>';
   html += '<input class="input" id="placeName" placeholder="地点名称" style="margin-bottom:8px;">';
   html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
   ['景点', '美食', '咖啡', '购物', '住宿', '交通', '其他'].forEach(function(c) {
@@ -92,24 +80,32 @@ safeRender(function() {
 
   document.getElementById('content').innerHTML = html;
 
+  window.showAddForm = function() {
+    var f = document.getElementById('addForm');
+    if (f) f.style.display = 'block';
+  };
+
   window.selectCat = function(cat, el) {
     var btns = document.querySelectorAll('#addForm span[onclick^="selectCat"]');
     btns.forEach(function(b) { b.style.background = 'var(--muted)'; b.style.color = 'var(--muted-fg)'; });
     el.style.background = 'var(--accent)'; el.style.color = '#fff';
-    document.getElementById('placeCat').value = cat;
+    var catInput = document.getElementById('placeCat');
+    if (catInput) catInput.value = cat;
   };
 
   window.addPlace = function() {
-    var n = document.getElementById('placeName').value.trim();
+    var nEl = document.getElementById('placeName');
+    var n = nEl ? nEl.value.trim() : '';
     if (!n) { showToast('请输入地点名称', 'warning'); return; }
     var p = {
       id: 'p-' + Date.now(),
       name: n,
-      cat: document.getElementById('placeCat').value,
-      time: document.getElementById('placeTime').value || '09:00',
-      duration: document.getElementById('placeDur').value || '1h',
+      cat: (document.getElementById('placeCat') || {}).value || '景点',
+      time: (document.getElementById('placeTime') || {}).value || '09:00',
+      duration: (document.getElementById('placeDur') || {}).value || '1h',
       fee: '免费'
     };
+    if (!day.places) day.places = [];
     day.places.push(p);
     saveTrips(loadTrips().map(function(t) { return t.id === trip.id ? trip : t; }));
     location.reload();
