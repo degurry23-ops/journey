@@ -220,40 +220,56 @@ safeRender(function() {
         }
       } catch (e) {}
 
-      if (!tripDays || !tripDays.length) {
-        var plan = generateTripPlan(answers.destination, answers.startDate, numDays, numMembers, numBudget, answers.preferences);
-        tripDays = plan.days || [];
-      }
-
+      // Ensure valid dates
       var startDate = answers.startDate || new Date().toISOString().split('T')[0];
       var endDate = new Date(startDate);
-      if (isNaN(endDate.getTime())) endDate = new Date(); // fallback
+      if (isNaN(endDate.getTime())) endDate = new Date();
       endDate.setDate(endDate.getDate() + numDays - 1);
+      var endDateStr = endDate.toISOString().split('T')[0];
+
+      if (!tripDays || !tripDays.length) {
+        var plan = generateTripPlan(answers.destination, startDate, numDays, numMembers, numBudget, answers.preferences);
+        tripDays = (plan && plan.days) ? plan.days : [];
+      }
+
+      // If still no data, show error
+      if (!tripDays || !tripDays.length) {
+        addChat('抱歉，生成失败了。请重试或换个目的地试试', 'ai');
+        var ft2 = document.querySelector('.chat-footer');
+        if (ft2) ft2.style.display = '';
+        updateInput();
+        step = 0;
+        return;
+      }
 
       window._tripData = {
-        name: answers.destination + '之旅', destination: answers.destination,
-        startDate: answers.startDate, endDate: endDate.toISOString().split('T')[0],
+        name: (answers.destination || '未知') + '之旅', destination: answers.destination || '',
+        startDate: startDate, endDate: endDateStr,
         members: numMembers, days: tripDays, budget: numBudget, emoji: '🌏', readiness: 30
       };
 
-      var html = '<div class="container" style="text-align:center;padding:40px 0;">';
-      html += '<div style="font-size:64px;margin-bottom:16px;">🎉</div>';
-      html += '<h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:8px;">行程已生成！</h2>';
-      html += '<p style="color:var(--muted-fg);margin-bottom:8px;">' + answers.destination + '之旅 · ' + numDays + '天 · ' + answers.startDate + ' 出发</p>';
+      var html = '<div style="text-align:center;padding:20px 0 40px;">';
+      html += '<div style="font-size:56px;margin-bottom:12px;">🎉</div>';
+      html += '<h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:4px;">行程已生成！</h2>';
+      html += '<p style="color:var(--muted-fg);font-size:14px;">' + (answers.destination || '') + ' · ' + numDays + '天 · ' + startDate + ' 出发</p></div>';
 
       for (var d = 0; d < tripDays.length; d++) {
         var day = tripDays[d];
-        html += '<div class="card animate-in" style="margin-bottom:12px;text-align:left;">';
-        html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;"><span class="tag tag-blue">Day ' + (d + 1) + '</span><span style="font-size:13px;color:var(--muted-fg);">' + (day.weather || '☀️ 晴 25°C') + '</span></div>';
-        for (var p = 0; p < day.places.length; p++) {
-          var pl = day.places[p];
-          var ci = pl.cat === '美食' ? '🍜' : pl.cat === '咖啡' ? '☕' : pl.cat === '购物' ? '🛍' : pl.cat === '住宿' ? '🏨' : '📍';
-          html += '<div style="display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:12px;color:var(--muted-fg);min-width:48px;">' + (pl.time || '09:00') + '</span><span>' + ci + '</span><span>' + pl.name + '</span></div>';
+        html += '<div class="card animate-in" style="margin-bottom:10px;text-align:left;">';
+        html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><span class="tag tag-blue">Day ' + (d + 1) + '</span><span style="font-size:13px;color:var(--muted-fg);">' + (day.weather || '☀️ 晴') + '</span></div>';
+        if (day.places && day.places.length) {
+          for (var p = 0; p < day.places.length; p++) {
+            var pl = day.places[p];
+            var ci = pl.cat === '美食' ? '🍜' : pl.cat === '咖啡' ? '☕' : pl.cat === '购物' ? '🛍' : pl.cat === '住宿' ? '🏨' : pl.cat === '交通' ? '🚇' : '📍';
+            html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;"><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted-fg);min-width:44px;">' + (pl.time || '09:00') + '</span><span style="font-size:16px;">' + ci + '</span><span>' + pl.name + '</span></div>';
+          }
+        } else {
+          html += '<div style="font-size:13px;color:var(--muted-fg);padding:8px 0;">自由探索</div>';
         }
         html += '</div>';
       }
-      html += '<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
-      html += '<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
+      html += '<button class="btn btn-primary btn-lg btn-full" style="margin-top:20px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
+      html += '<button class="btn btn-outline btn-full" style="margin-top:8px;" onclick="location.reload()">🔄 重新生成</button>';
 
       var main = document.querySelector('#chatPhase main');
       if (main) main.innerHTML = html;
