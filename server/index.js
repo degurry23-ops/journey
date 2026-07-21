@@ -11,13 +11,7 @@ const expensesRouter = require('./routes/expenses');
 const photosRouter = require('./routes/photos');
 const aiRouter = require('./routes/ai');
 const { router: authRouter, authMiddleware } = require('./routes/auth');
-const { db } = require('./db');
-
-// Auto-seed on first deploy
-if (db.trips.all().length === 0) {
-  console.log('No trips found, seeding sample data...');
-  require('./seed');
-}
+const { initDB, db } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -59,8 +53,15 @@ app.get('*', (req, res) => {
 });
 
 // Start
-app.listen(PORT, () => {
-  console.log('Journey API Server running at http://localhost:' + PORT);
-  console.log('Serving frontend from: ' + publicDir);
-  console.log('AI Provider: ' + (process.env.AI_PROVIDER || 'mock (fallback)'));
+initDB().then(() => {
+  // Auto-seed on first deploy
+  if (db.trips.all().length === 0) {
+    console.log('No trips found, seeding sample data...');
+    require('./seed');
+  }
+  app.listen(PORT, () => {
+    console.log('Journey API Server running at http://localhost:' + PORT);
+    console.log('Serving frontend from: ' + publicDir);
+    console.log('AI Provider: ' + (process.env.AI_PROVIDER || 'mock (fallback)'));
+  });
 });

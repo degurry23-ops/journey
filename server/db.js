@@ -1,111 +1,234 @@
-/* Journey — JSON File Database
-   Simple atomic JSON storage — zero native dependencies */
+/* Journey — SQLite Database (via sql.js, pure JS) */
 
+const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, 'data.json');
-
-// In-memory store
-let data = { trips: [], days: [], places: [], expenses: [], photos: [] };
-
-// Load from disk
-function load() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const raw = fs.readFileSync(DB_PATH, 'utf-8');
-      data = JSON.parse(raw);
-      // Ensure all collections exist
-      ['trips', 'days', 'places', 'expenses', 'photos', 'users'].forEach(k => {
-        if (!data[k]) data[k] = [];
-      });
-    }
-  } catch (e) {
-    console.warn('DB load error, starting fresh:', e.message);
-    data = { trips: [], days: [], places: [], expenses: [], photos: [], users: [] };
-  }
-}
-
-// Save to disk (atomic write)
-function save() {
-  const tmp = DB_PATH + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf-8');
-  fs.renameSync(tmp, DB_PATH);
-}
+const DB_PATH = path.join(__dirname, 'journey.db');
+let db = null;
 
 // Initialize
-load();
+async function initDB() {
+  const SQL = await initSqlJs();
 
-// ── Helpers ──
+  // Load existing or create new
+  if (fs.existsSync(DB_PATH)) {
+    const buffer = fs.readFileSync(DB_PATH);
+    db = new SQL.Database(buffer);
+  } else {
+    db = new SQL.Database();
+  }
+
+  // Enable WAL-like behavior (manual)
+  db.run('PRAGMA foreign_keys = ON');
+
+  // Schema
+  db.run(`
+    CREATE TABLE IF NOT EXISTS trips (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      destination TEXT DEFAULT '',
+      start_date TEXT DEFAULT '',
+      end_date TEXT DEFAULT '',
+      members INTEGER DEFAULT 1,
+      status TEXT DEFAULT 'planning',
+      readiness INTEGER DEFAULT 0,
+      emoji TEXT DEFAULT '🌏',
+      budget TEXT DEFAULT '',
+      preferences TEXT DEFAULT '',
+      summary TEXT DEFAULT '',
+      tags TEXT DEFAULT '[]',
+      created TEXT DEFAULT '',
+      updated TEXT DEFAULT ''
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS trip_days (
+      id TEXT PRIMARY KEY,
+      trip_id TEXT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+      date TEXT DEFAULT '',
+      weather TEXT DEFAULT '☀️ 晴 25°C',
+      tip TEXT DEFAULT '',
+      sort_order INTEGER DEFAULT 0
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS places (
+      id TEXT PRIMARY KEY,
+      day_id TEXT NOT NULL REFERENCES trip_days(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      category TEXT DEFAULT '景点',
+      time TEXT DEFAULT '09:00',
+      duration TEXT DEFAULT '1h',
+      fee TEXT DEFAULT '免费',
+      lat REAL,
+      lng REAL,
+      sort_order INTEGER DEFAULT 0
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id TEXT PRIMARY KEY,
+      trip_id TEXT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+      category TEXT DEFAULT '餐饮',
+      amount REAL NOT NULL DEFAULT 0,
+      note TEXT DEFAULT '',
+      payer TEXT DEFAULT '我',
+      date TEXT DEFAULT '',
+      day_id TEXT DEFAULT ''
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS photos (
+      id TEXT PRIMARY KEY,
+      trip_id TEXT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+      data_url TEXT NOT NULL,
+      created TEXT DEFAULT ''
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created TEXT DEFAULT ''
+    )
+  `);
+
+  save();
+  console.log('SQLite DB ready');
+}
+
+// Save to disk
+function save() {
+  if (!db) return;
+  const data = db.export();
+  const buffer = Buffer.from(data);
+  fs.writeFileSync(DB_PATH, buffer);
+}
+
+// Helpers
 function genId() {
   return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
 }
 
-// ── Database API (mimics SQL operations) ──
-const db = {
-  // Query helpers
+function rowToObj(row, columns) {
+  const obj = {};
+  columns.forEach((col, i) => { obj[col] = row[i]; });
+  return obj;
+}
+
+function all(sql, params = []) {
+  if (!db) return [];
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  const results = [];
+  while (stmt.step()) {
+    results.push(rowToObj(stmt.get(), stmt.getColumnNames()));
+  }
+  stmt.free();
+  return results;
+}
+
+function get(sql, params = []) {
+  if (!db) return null;
+  const rows = all(sql, params);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+function run(sql, params = []) {
+  if (!db) return;
+  db.run(sql, params);
+  save();
+}
+
+// Database API
+const dbAPI = {
   trips: {
-    all: () => [...data.trips],
-    get: (id) => data.trips.find(t => t.id === id) || null,
-    insert: (trip) => { data.trips.push(trip); save(); return trip; },
+    all: () => all('SELECT * FROM trips ORDER BY created DESC'),
+    get: (id) => get('SELECT * FROM trips WHERE id = ?', [id]),
+    insert: (trip) => {
+      const cols = Object.keys(trip).join(',');
+      const vals = Object.values(trip);
+      const placeholders = vals.map(() => '?').join(',');
+      run(`INSERT INTO trips (${cols}) VALUES (${placeholders})`, vals);
+      return trip;
+    },
     update: (id, updates) => {
-      const idx = data.trips.findIndex(t => t.id === id);
-      if (idx === -1) return null;
-      data.trips[idx] = { ...data.trips[idx], ...updates, updated: new Date().toISOString() };
-      save();
-      return data.trips[idx];
+      const sets = Object.keys(updates).map(k => `${k} = ?`).join(', ');
+      const vals = Object.values(updates);
+      vals.push(id);
+      run(`UPDATE trips SET ${sets} WHERE id = ?`, vals);
+      return get('SELECT * FROM trips WHERE id = ?', [id]);
     },
     delete: (id) => {
-      // Cascade delete
-      const dayIds = data.days.filter(d => d.trip_id === id).map(d => d.id);
-      data.places = data.places.filter(p => !dayIds.includes(p.day_id));
-      data.days = data.days.filter(d => d.trip_id !== id);
-      data.expenses = data.expenses.filter(e => e.trip_id !== id);
-      data.photos = data.photos.filter(p => p.trip_id !== id);
-      data.trips = data.trips.filter(t => t.id !== id);
-      save();
+      const days = all('SELECT id FROM trip_days WHERE trip_id = ?', [id]);
+      days.forEach(d => run('DELETE FROM places WHERE day_id = ?', [d.id]));
+      run('DELETE FROM trip_days WHERE trip_id = ?', [id]);
+      run('DELETE FROM expenses WHERE trip_id = ?', [id]);
+      run('DELETE FROM photos WHERE trip_id = ?', [id]);
+      run('DELETE FROM trips WHERE id = ?', [id]);
     }
   },
-
   days: {
-    byTrip: (tripId) => data.days.filter(d => d.trip_id === tripId).sort((a, b) => a.sort_order - b.sort_order),
-    get: (id) => data.days.find(d => d.id === id) || null,
-    count: (tripId) => data.days.filter(d => d.trip_id === tripId).length,
-    insert: (day) => { data.days.push(day); save(); return day; },
-    delete: (id) => {
-      data.places = data.places.filter(p => p.day_id !== id);
-      data.days = data.days.filter(d => d.id !== id);
-      save();
+    byTrip: (tripId) => all('SELECT * FROM trip_days WHERE trip_id = ? ORDER BY sort_order', [tripId]),
+    get: (id) => get('SELECT * FROM trip_days WHERE id = ?', [id]),
+    count: (tripId) => { const r = get('SELECT COUNT(*) as cnt FROM trip_days WHERE trip_id = ?', [tripId]); return r ? r.cnt : 0; },
+    insert: (day) => {
+      const cols = Object.keys(day).join(',');
+      const vals = Object.values(day);
+      run(`INSERT INTO trip_days (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
+      return day;
     }
   },
-
   places: {
-    byDay: (dayId) => data.places.filter(p => p.day_id === dayId).sort((a, b) => a.sort_order - b.sort_order),
-    count: (dayId) => data.places.filter(p => p.day_id === dayId).length,
-    insert: (place) => { data.places.push(place); save(); return place; },
-    delete: (id) => { data.places = data.places.filter(p => p.id !== id); save(); }
+    byDay: (dayId) => all('SELECT * FROM places WHERE day_id = ? ORDER BY sort_order', [dayId]),
+    count: (dayId) => { const r = get('SELECT COUNT(*) as cnt FROM places WHERE day_id = ?', [dayId]); return r ? r.cnt : 0; },
+    insert: (place) => {
+      const cols = Object.keys(place).join(',');
+      const vals = Object.values(place);
+      run(`INSERT INTO places (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
+      return place;
+    },
+    delete: (id) => run('DELETE FROM places WHERE id = ?', [id])
   },
-
   expenses: {
-    byTrip: (tripId) => data.expenses.filter(e => e.trip_id === tripId).sort((a, b) => (b.date || '').localeCompare(a.date || '')),
-    get: (id) => data.expenses.find(e => e.id === id) || null,
-    insert: (expense) => { data.expenses.push(expense); save(); return expense; },
-    delete: (id) => { data.expenses = data.expenses.filter(e => e.id !== id); save(); }
+    byTrip: (tripId) => all('SELECT * FROM expenses WHERE trip_id = ? ORDER BY date DESC', [tripId]),
+    get: (id) => get('SELECT * FROM expenses WHERE id = ?', [id]),
+    insert: (expense) => {
+      const cols = Object.keys(expense).join(',');
+      const vals = Object.values(expense);
+      run(`INSERT INTO expenses (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
+      return expense;
+    },
+    delete: (id) => run('DELETE FROM expenses WHERE id = ?', [id])
   },
-
   photos: {
-    byTrip: (tripId) => data.photos.filter(p => p.trip_id === tripId).sort((a, b) => (b.created || '').localeCompare(a.created || '')),
-    insert: (photo) => { data.photos.push(photo); save(); return photo; },
-    delete: (id) => { data.photos = data.photos.filter(p => p.id !== id); save(); }
+    byTrip: (tripId) => all('SELECT * FROM photos WHERE trip_id = ? ORDER BY created DESC', [tripId]),
+    insert: (photo) => {
+      const cols = Object.keys(photo).join(',');
+      const vals = Object.values(photo);
+      run(`INSERT INTO photos (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
+      return photo;
+    },
+    delete: (id) => run('DELETE FROM photos WHERE id = ?', [id])
   },
-
   users: {
-    all: () => [...data.users],
-    get: (id) => data.users.find(u => u.id === id) || null,
-    getByUsername: (username) => data.users.find(u => u.username === username) || null,
-    insert: (user) => { data.users.push(user); save(); return user; },
-    delete: (id) => { data.users = data.users.filter(u => u.id !== id); save(); }
+    all: () => all('SELECT * FROM users'),
+    get: (id) => get('SELECT * FROM users WHERE id = ?', [id]),
+    getByUsername: (username) => get('SELECT * FROM users WHERE username = ?', [username]),
+    insert: (user) => {
+      const cols = Object.keys(user).join(',');
+      const vals = Object.values(user);
+      run(`INSERT INTO users (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
+      return user;
+    }
   }
 };
 
-module.exports = { db, genId, DB_PATH };
+module.exports = { initDB, db: dbAPI, genId, DB_PATH };
