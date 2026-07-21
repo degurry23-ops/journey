@@ -638,6 +638,77 @@ section.dark .stat-item .label { color: rgba(255,255,255,0.5); }
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
+
+/* ── Journey Cards (Trip List) ── */
+.journey-card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all .2s;
+  cursor: pointer;
+}
+.journey-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  transform: translateY(-1px);
+}
+.place-chip {
+  font-size: 12px;
+  background: var(--muted);
+  padding: 2px 10px;
+  border-radius: 6px;
+  color: var(--muted-fg);
+}
+.card-action {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+.card-action-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted-fg);
+}
+.tag-sm {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* ── Tab Bar ── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  background: var(--muted);
+  border-radius: 999px;
+  padding: 4px;
+  overflow-x: auto;
+}
+.tab {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.tab.active {
+  background: var(--card);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
 .memory-card:active {
   transform: scale(0.98);
 }
