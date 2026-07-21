@@ -247,12 +247,12 @@ function genId() { return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(
 
 // Currency by destination (fallback rates, updated by live API)
 var CURRENCY_MAP = {
-  '日本东京': { sym: '¥', code: 'JPY', rate: 0.048 },
-  '日本':   { sym: '¥', code: 'JPY', rate: 0.048 },
-  '韩国首尔': { sym: '₩', code: 'KRW', rate: 0.0053 },
-  '韩国':   { sym: '₩', code: 'KRW', rate: 0.0053 },
-  '泰国曼谷': { sym: '฿', code: 'THB', rate: 0.20 },
-  '泰国':   { sym: '฿', code: 'THB', rate: 0.20 }
+  '日本东京': { sym: '¥', code: 'JPY', label: 'JPY', rate: 0.048 },
+  '日本':   { sym: '¥', code: 'JPY', label: 'JPY', rate: 0.048 },
+  '韩国首尔': { sym: '₩', code: 'KRW', label: 'KRW', rate: 0.0053 },
+  '韩国':   { sym: '₩', code: 'KRW', label: 'KRW', rate: 0.0053 },
+  '泰国曼谷': { sym: '฿', code: 'THB', label: 'THB', rate: 0.20 },
+  '泰国':   { sym: '฿', code: 'THB', label: 'THB', rate: 0.20 }
 };
 // Live rate cache
 var LIVE_RATES = {};
