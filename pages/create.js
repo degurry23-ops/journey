@@ -1,6 +1,42 @@
-/* Journey — Create Trip Page (AI Chat) */
+/* Journey — Create Trip Page (AI Chat + Onboarding) */
 
 safeRender(function() {
+  // ── Templates ──
+  var templates = [
+    { label: '🌸 东京7日漫游', destination: '日本东京', days: 7, members: 2, budget: 8000, preferences: '美食探索', emoji: '🇯🇵' },
+    { label: '🏔 云南慢旅行', destination: '云南大理', days: 5, members: 2, budget: 4000, preferences: '自然风光', emoji: '🏔️' },
+    { label: '🍜 成都美食之旅', destination: '四川成都', days: 4, members: 4, budget: 5000, preferences: '美食探索', emoji: '🐼' },
+    { label: '🏙 上海都市漫游', destination: '上海', days: 3, members: 1, budget: 3000, preferences: '慢节奏体验', emoji: '🌆' }
+  ];
+
+  var tmplContainer = document.getElementById('templates');
+  if (tmplContainer) {
+    tmplContainer.innerHTML = templates.map(function(t) {
+      return '<span onclick="quickTemplate(\'' + t.destination + '\',' + t.days + ',' + t.members + ',' + t.budget + ',\'' + t.preferences + '\')" style="padding:10px 18px;border-radius:var(--radius-lg);font-size:14px;background:var(--card);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);white-space:nowrap;">' + t.label + '</span>';
+    }).join('');
+  }
+
+  window.quickTemplate = function(dest, days, members, budget, prefs) {
+    startChat();
+    answers = { destination: dest, days: '' + days, members: '' + members, budget: '' + budget, preferences: prefs };
+    // Skip to generation
+    step = steps.length - 1;
+    addChat(dest + ' · ' + days + '天 · ' + members + '人', 'user');
+    generateTrip();
+  };
+
+  window.startChat = function() {
+    var ob = document.getElementById('onboarding');
+    var cp = document.getElementById('chatPhase');
+    if (ob) ob.style.display = 'none';
+    if (cp) { cp.style.display = 'flex'; cp.style.flexDirection = 'column'; }
+    var firstS = steps[0];
+    updateInput();
+    if (firstS.suggestions) {
+      addChat(firstS.q, 'ai', { suggestions: firstS.suggestions });
+    }
+  };
+
   var steps = [
     { q: 'Hi！想去哪里<span class=\"gradient-text\" style=\"font-weight:600;\">旅行</span>？', icon: '🌏', hint: '输入目的地或点击下方推荐', key: 'destination', placeholder: '例如：日本东京', suggestions: [
       { label: '🇯🇵 日本东京', value: '日本东京' },
@@ -115,17 +151,39 @@ safeRender(function() {
       updateInput();
       answer.value = '';
     } else {
-      addChat('好的！正在为你规划 ' + answers.destination + ' 的 ' + answers.days + ' 天旅行...', 'ai');
-      if (progress) progress.style.width = '100%';
-      var footer = document.querySelector('footer');
-      if (footer) footer.innerHTML = '<div class="container" style="text-align:center;padding:20px;"><p style="color:var(--muted-fg);">🤖 AI 正在为您规划...</p></div>';
+      generateTrip();
+    }
+  }
 
-      var numDays = parseInt(answers.days || 5);
-      var numMembers = parseInt(answers.members || 1);
-      var numBudget = parseInt(answers.budget || 5000);
-      var tripDays = null;
+  async function generateTrip() {
+    addChat('好的！开始为你规划...', 'ai');
+    // AI progress animation
+    var progressSteps = ['分析最佳旅行时间...','筛选热门地点...','计算路线距离...','生成每日安排...','准备预算方案...'];
+    var progDiv = document.createElement('div');
+    progDiv.className = 'chat-ai';
+    progDiv.innerHTML = '<div class="avatar"><i class="fas fa-robot"></i></div><div class="bubble" id="aiProgress"><p style="font-size:13px;color:var(--muted-fg);">🤖 AI 正在规划中...</p></div>';
+    chat.appendChild(progDiv);
+    chat.scrollTop = chat.scrollHeight;
 
-      try {
+    for (var i = 0; i < progressSteps.length; i++) {
+      await new Promise(function(r) { setTimeout(r, 400); });
+      var pb = document.getElementById('aiProgress');
+      if (pb) {
+        pb.innerHTML = '<p style="font-size:13px;color:var(--muted-fg);">🤖 AI 正在规划中...</p>' +
+          progressSteps.slice(0, i + 1).map(function(s) { return '<div style="font-size:12px;color:var(--success);margin-top:4px;">✓ ' + s + '</div>'; }).join('');
+      }
+      if (progress) progress.style.width = ((i + 1) / progressSteps.length * 100) + '%';
+    }
+    if (progress) progress.style.width = '100%';
+    var footer = document.querySelector('.chat-footer');
+    if (footer) footer.style.display = 'none';
+
+    var numDays = parseInt(answers.days || 5);
+    var numMembers = parseInt(answers.members || 1);
+    var numBudget = parseInt(answers.budget || 5000);
+    var tripDays = null;
+
+    try {
         var aiResult = await callAITripPlan({
           destination: answers.destination,
           startDate: answers.startDate,
@@ -188,10 +246,10 @@ safeRender(function() {
       html += '<button class="btn btn-primary btn-lg btn-full" style="margin-top:24px;" onclick="confirmTrip()">✈️ 确认行程，开始旅程</button>';
       html += '<button class="btn btn-outline btn-lg btn-full" style="margin-top:12px;" onclick="location.reload()">🔄 重新生成</button></div>';
 
-      var main = document.querySelector('main');
+      var main = document.querySelector('#chatPhase main');
       if (main) main.innerHTML = html;
-      if (footer) footer.style.display = 'none';
-    }
+      var ft = document.querySelector('.chat-footer');
+      if (ft) ft.style.display = 'none';
   }
 
   window.confirmTrip = function() {
