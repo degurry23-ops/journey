@@ -16,8 +16,11 @@ safeRender(function() {
   var pp = total / (trip.members || 1);
   var budgetPerPerson = parseInt(trip.budget) || 0;
   var budgetTotal = budgetPerPerson * (trip.members || 1);
-  var budgetUsed = budgetTotal > 0 ? Math.round(total / budgetTotal * 100) : 0;
   var cur = getCurrency(trip.destination);
+  // Convert total to CNY for budget comparison if foreign currency
+  var totalCNY = Math.round(total * cur.rate);
+  var budgetUsed = budgetTotal > 0 ? Math.round(totalCNY / budgetTotal * 100) : 0;
+  var isForeign = cur.code !== 'CNY';
   var catDefs = { '餐饮': '🍜', '交通': '🚇', '住宿': '🏨', '门票': '🎫', '购物': '🛍', '其他': '💊' };
 
   var cats = {};
@@ -32,15 +35,19 @@ safeRender(function() {
     h += '<div style="background:var(--fg);color:#fff;border-radius:16px;padding:24px;margin-bottom:16px;">';
     h += '<div style="font-size:13px;opacity:.7;">总消费</div><div style="font-size:2.5rem;font-weight:700;margin:4px 0;">' + cur.sym + total.toLocaleString() + '</div>';
     h += '<div style="display:flex;gap:20px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);"><div><span style="font-size:11px;opacity:.5;">人均</span><div style="font-weight:700;">' + cur.sym + Math.round(pp).toLocaleString() + '</div></div><div><span style="font-size:11px;opacity:.5;">笔数</span><div style="font-weight:700;">' + expenses.length + '</div></div></div>';
-    // Budget alert
+    // Budget alert with currency conversion
     if (budgetTotal > 0) {
       var alertColor = budgetUsed >= 100 ? '#EF4444' : budgetUsed >= 80 ? '#F59E0B' : '#10B981';
       var alertIcon = budgetUsed >= 100 ? '⚠️' : budgetUsed >= 80 ? '📊' : '✅';
       h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);">';
-      h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;opacity:.7;">' + alertIcon + ' 预算使用</span><span style="font-size:13px;font-weight:600;color:' + alertColor + ';">' + budgetUsed + '%</span></div>';
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;opacity:.7;">' + alertIcon + ' 预算使用（折合CNY）</span><span style="font-size:13px;font-weight:600;color:' + alertColor + ';">' + budgetUsed + '%</span></div>';
       h += '<div style="height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;">';
       h += '<div style="height:100%;width:' + Math.min(budgetUsed, 100) + '%;background:' + alertColor + ';border-radius:3px;transition:width .5s;"></div></div>';
-      h += '<div style="font-size:11px;opacity:.5;margin-top:4px;">总预算 ' + cur.sym + budgetTotal.toLocaleString() + '（' + (trip.members || 1) + '人 × ' + cur.sym + budgetPerPerson.toLocaleString() + '/人）</div></div>';
+      h += '<div style="font-size:11px;opacity:.5;margin-top:4px;">';
+      if (isForeign) {
+        h += cur.sym + total.toLocaleString() + ' ' + cur.code + ' ≈ ¥' + totalCNY.toLocaleString() + ' CNY · ';
+      }
+      h += '预算 ¥' + budgetTotal.toLocaleString() + ' CNY（' + (trip.members || 1) + '人 × ¥' + budgetPerPerson.toLocaleString() + '/人）</div></div>';
     }
     h += '</div>';
 
