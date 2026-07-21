@@ -1,62 +1,138 @@
-# Journey — AI 旅行手帐
+# Journey — AI 旅行伙伴
 
-> AI 驱动的旅行规划与记录。一个 App，完成整段旅程。
+> 从目的地到回忆，一个 App 完成整段旅程。
 
-[![Deploy](https://img.shields.io/badge/Live-journey--nwot.onrender.com-blue)](https://journey-nwot.onrender.com)
+[![Live](https://img.shields.io/badge/Live-journey--nwot.onrender.com-blue)](https://journey-nwot.onrender.com)
+
+**Journey** 是一款面向自由行用户的 AI 旅行规划与陪伴产品。不是攻略 App、不是地图、不是记账软件——而是以时间轴组织的 AI 旅行伙伴，覆盖旅行前、中、后全生命周期。
 
 ---
 
 ## 产品闭环
 
 ```
-AI 创建旅行 → 编辑行程 → 出发前准备 → Today 每日旅程 → 旅行日志/分享卡片
+旅行前                旅行中                旅行后
+AI 智能规划     →    Today 每日陪伴    →    旅行日志与分享
+· 目的地推荐         · 今日路线             · AI 旅行总结
+· 行程自动生成       · 预算跟踪             · 消费分析
+· 准备清单           · 记账与 AA            · 照片墙
+· 同行伙伴           · 地图导航             · 分享卡片
 ```
 
 ---
 
-## 功能
+## 产品定位
 
-| 页面 | 说明 |
-|------|------|
-| 🏠 **首页** | AI 旅行伙伴 Hero + 下一段旅程 + 进行中卡片 + 旅行足迹 + 记忆卡片 |
-| ✨ **AI 创建** | 卡片式向导 6 步 → DeepSeek/OpenAI/Claude 真 AI 生成 → 可编辑确认 |
-| 📋 **行程详情** | 动态准备度 + 同行伙伴 + 行李清单 + 每日路线 |
-| 📅 **Today** | 时段问候 + 天气 + 路线时间轴 + 预算进度 + AI 提醒 + 快捷拍照 |
-| 🗺 **地图** | Leaflet 动态 Day 筛选 + 颜色标记 + Polyline 路线连线 |
-| 💰 **记账** | 分类统计 + AA 分摊 + 预算预警 + 多币种换算 |
-| 📖 **日志** | 每日回顾 + AI 总结 + ECharts 饼图 + 照片墙 + 行程分享卡片 |
-| ⚙️ **设置** | 用户昵称 + API Key + 数据导出/导入/清空 |
+| 对比 | 携程/飞猪 | 小红书 | 高德地图 | Splitwise | **Journey** |
+|------|----------|--------|---------|-----------|-------------|
+| 解决什么 | 订票订酒店 | 查攻略 | 导航 | AA 记账 | **规划+陪伴+回忆** |
+| 旅行阶段 | 出发前 | 出发前 | 旅行中 | 旅行中 | **全阶段** |
+| AI 能力 | 无 | 无 | 无 | 无 | **AI 贯穿始终** |
+
+---
+
+## 核心功能
+
+### 🏠 首页 — AI 旅行伙伴
+- AI 状态卡：展示 AI 已完成和下一步建议
+- 下一段旅程 Hero：倒计时、准备度、目的地信息
+- 进行中旅程卡：今日路线预览、天气、快捷入口
+- 旅行足迹：城市/地点/照片/回忆统计
+- 记忆卡片：已完成旅程的 AI 总结摘要
+
+### ✨ AI 创建旅行
+- 卡片式向导（6 步）：目的地→日期→天数→人数→预算→风格
+- 接入 **DeepSeek / OpenAI / Claude** 真实 AI 生成
+- 目的地推荐卡片 + 风格选择（美食/文化/自然/打卡等）
+- 结果可编辑：修改名称、日期、预算、增删地点后保存
+- AI 进度动画 + 生成说明
+
+### 📅 Today — 旅行中每日入口
+- 时段问候 + 天气 + 当前天数
+- 路线时间轴：时间、地点、时长、一键导航
+- 每日预算进度条
+- AI 今日提醒
+- 快捷拍照 + 速记 + Day 切换器
+
+### 📋 行程详情 — 控制中心
+- 动态准备度（根据天数/成员/预算/行李自动计算）
+- 同行伙伴（邀请链接一键复制）
+- 智能行李清单（根据目的地天气生成，支持增删勾选）
+- 每日路线卡片，统一进入日程/地图/记账/日志
+
+### 🗺 地图模式
+- Leaflet 交互地图
+- 按 Day 筛选，不同天数不同颜色
+- 地点标记 + 路线连线
+- 空状态引导
+
+### 💰 旅行记账
+- 分类统计（餐饮/交通/住宿/门票/购物/其他）
+- AA 分摊结算
+- 预算进度条（绿色→黄色→红色预警）
+- 海外旅行自动换算汇率（¥980 JPY ≈ ¥49 CNY）
+
+### 📖 旅行日志
+- 旅行封面 + 每日回顾时间轴
+- AI 旅行总结（支持重新生成）
+- ECharts 消费分布饼图
+- 照片墙（上传/删除/大图预览）
+- 行程分享卡片（统计 + 摘要 + 标签，一键复制）
+
+### 👤 用户系统
+- 轻量级：昵称 + 个人 API Key，存储在 localStorage
+- 用自己的 Key 不限 AI 次数
+- IP 限流保护（20 次/天/人，可配置）
 
 ---
 
 ## 技术架构
 
 ```
-前端 (HTML/CSS/JS)         后端 (Node.js Express)        AI
-┌──────────────────┐       ┌──────────────────┐       ┌──────────┐
-│ 9 个页面          │  API  │ REST API          │       │ DeepSeek │
-│ localStorage 缓存 │ ←───→ │ JSON 文件数据库    │  ←──  │ OpenAI   │
-│ API Bridge 同步   │       │ IP 限流 (20次/天) │       │ Claude   │
-└──────────────────┘       └──────────────────┘       └──────────┘
+┌─────────────────────────────────────────────────────────┐
+│                     用户浏览器                            │
+│  HTML/CSS/JS · 9 个页面 · localStorage 缓存              │
+│  API Bridge: 本地即时响应 + 后台同步服务端                 │
+├─────────────────────────────────────────────────────────┤
+│                 Express API Server (:3001)               │
+│  REST: /api/trips · /expenses · /photos · /ai           │
+│  JSON 文件数据库（原子写入）· IP 限流                     │
+├─────────────────────────────────────────────────────────┤
+│                    AI 服务层                              │
+│  DeepSeek · OpenAI · Claude · Mock（自动回退）            │
+└─────────────────────────────────────────────────────────┘
 ```
 
-- **前端**: 纯 HTML/CSS/JS，无框架，零构建
-- **后端**: Express + JSON 原子写入（零依赖数据库）
-- **AI**: 支持 DeepSeek / OpenAI / Claude / Mock 四模式
-- **地图**: Leaflet + OpenStreetMap
-- **图表**: ECharts
-- **部署**: Docker → Render / Railway / 任意云平台
+- **前端**：纯 HTML/CSS/JS，零框架，零构建
+- **后端**：Node.js Express，JSON 原子写入数据库
+- **AI**：四模式（DeepSeek/OpenAI/Claude/Mock），故障自动回退
+- **地图**：Leaflet + OpenStreetMap
+- **图表**：ECharts
+- **部署**：Docker → Render / Railway
 
 ---
 
-## 本地运行
+## 快速开始
 
 ```bash
 cd server
 npm install
-npm run seed        # 初始化示例数据
-npm start           # http://localhost:3001
+npm run seed          # 初始化 4 条示例数据
+npm start             # http://localhost:3001
 ```
+
+### 接入真实 AI
+
+编辑 `server/.env`：
+
+```env
+AI_PROVIDER=openai
+AI_API_KEY=sk-your-key
+AI_MODEL=deepseek-chat
+AI_BASE_URL=https://api.deepseek.com/v1
+```
+
+支持 DeepSeek（推荐，最便宜）、OpenAI、Claude。
 
 ---
 
@@ -65,70 +141,24 @@ npm start           # http://localhost:3001
 | Key | 默认值 | 说明 |
 |-----|--------|------|
 | `PORT` | `3001` | 服务端口 |
-| `AI_PROVIDER` | `mock` | `openai` / `claude` / `mock` |
-| `AI_API_KEY` | - | AI API Key |
+| `AI_PROVIDER` | `mock` | AI 提供商 |
+| `AI_API_KEY` | - | API 密钥 |
 | `AI_MODEL` | `deepseek-chat` | 模型名称 |
 | `AI_BASE_URL` | `https://api.deepseek.com/v1` | API 地址 |
-| `AI_DAILY_LIMIT` | `20` | 每 IP 每日 AI 次数 |
-| `AI_MAX_TOKENS` | `1500` | 每次最大 Token |
+| `AI_DAILY_LIMIT` | `20` | 每 IP 每日上限 |
+| `AI_MAX_TOKENS` | `1500` | 每次 Token 上限 |
 
 ---
 
-## 项目结构
+## 产品路线图
 
-```
-├── index.html              # 首页
-├── journeys.html           # 旅行列表
-├── create.html             # AI 创建旅行
-├── trip-detail.html        # 行程详情（控制中心）
-├── today.html              # Today 今日旅程
-├── day-timeline.html       # 日程编辑
-├── map.html                # 地图模式
-├── journal.html            # 旅行日志
-├── expenses.html           # 旅行记账
-├── settings.html           # 设置
-├── styles.css              # 全局样式
-├── storage.js              # 数据层 (localStorage + API)
-├── utils.js                # 工具函数
-├── api.js                  # API 客户端
-├── api-bridge.js           # localStorage ↔ API 同步桥
-├── components/
-│   └── header.js           # 共享导航（含用户登录入口）
-├── pages/
-│   ├── home.js             # 首页逻辑
-│   ├── journeys.js         # 旅行列表逻辑
-│   ├── create.js           # AI 创建向导
-│   ├── trip-detail.js      # 行程详情逻辑
-│   ├── today.js            # Today 页逻辑
-│   ├── timeline.js         # 日程编辑逻辑
-│   ├── map.js              # 地图逻辑
-│   ├── journal.js          # 日志逻辑
-│   ├── expenses.js         # 记账逻辑
-│   └── settings.js         # 设置逻辑
-├── server/
-│   ├── index.js            # Express 入口
-│   ├── db.js               # JSON 数据库
-│   ├── seed.js             # 示例数据
-│   ├── .env                # 环境变量
-│   └── routes/
-│       ├── trips.js        # 行程 CRUD API
-│       ├── expenses.js     # 记账 API
-│       ├── photos.js       # 照片 API
-│       └── ai.js           # AI 生成 + 限流
-└── Dockerfile              # 容器化部署
-```
+| 阶段 | 目标 | 内容 |
+|------|------|------|
+| ✅ 已完成 | MVP 核心闭环 | AI 创建 → 行程编辑 → Today → 记账 → 日志 |
+| 🔜 下一步 | 真实可用 | 登录系统、云端数据库、图片存储、真实天气 |
+| 📋 规划中 | 旅行执行 | 导航、协作、预算提醒、动态路线 |
+| 🎯 远期 | 增长传播 | 分享海报、旅行模板、社区 |
 
 ---
 
-## 示例数据
-
-| 旅行 | 日期 | 天数 | 状态 |
-|------|------|------|------|
-| 🇯🇵 东京之旅 | 2026-08-02 ~ 08-08 | 7天 | 计划中 |
-| 🐼 成都之旅 | 2026-07-18 ~ 07-22 | 5天 | 进行中 |
-| 🌆 上海之旅 | 2026-05-10 ~ 05-13 | 4天 | 已完成 |
-| 🏔️ 大理之旅 | 2026-03-05 ~ 03-07 | 3天 | 已完成 |
-
----
-
-Made with 💙 Journey · Every Journey Deserves to Be Remembered
+Made with 💙 Journey
