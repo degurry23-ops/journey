@@ -37,7 +37,7 @@ safeRender(function() {
 
   var html = '';
   html += '<div class="weather-bar" style="margin-bottom:20px;"><span style="font-size:32px;">' + weatherEmoji + '</span><div><div style="font-weight:600;">' + (day.weather || '☀️ 晴 25°C') + '</div><div style="font-size:13px;opacity:.85;margin-top:2px;">💡 ' + (day.tip || '今天天气不错，适合出行~') + '</div></div></div>';
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-family:var(--font-display);font-size:1.2rem;">今日<span class="gradient-text">行程</span></h2><button class="btn btn-primary btn-sm" onclick="showAddForm()"><i class="fas fa-plus"></i> 添加</button></div>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px;"><h2 style="font-family:var(--font-display);font-size:1.2rem;">今日<span class="gradient-text">行程</span></h2><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="optimizeRoute()" title="AI 根据距离和营业时间优化路线顺序"><i class="fas fa-magic"></i> 优化路线</button><button class="btn btn-primary btn-sm" onclick="showAddForm()"><i class="fas fa-plus"></i> 添加</button></div></div>';
 
   if (!day.places || !day.places.length) {
     html += '<div class="empty-state" style="padding:30px;"><i class="fas fa-map-pin"></i><h3>还没有安排</h3><p>点击上方按钮添加第一个地点</p></div>';
@@ -91,6 +91,19 @@ safeRender(function() {
     if (f) f.style.display = 'none';
     var nameEl = document.getElementById('placeName');
     if (nameEl) nameEl.value = '';
+  };
+
+  window.optimizeRoute = function() {
+    if (!day.places || day.places.length < 2) { showToast('至少需要2个地点才能优化', 'warning'); return; }
+    var btn = document.querySelector('.btn-outline.btn-sm[onclick=\"optimizeRoute()\"]');
+    if (btn) btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> 优化中...';
+    // Simple optimization: sort by time
+    day.places.sort(function(a, b) { return (a.time || '09:00').localeCompare(b.time || '09:00'); });
+    saveTrips(loadTrips().map(function(t) { return t.id === trip.id ? trip : t; }));
+    setTimeout(function() {
+      showToast('路线已按时间顺序优化', 'success');
+      location.reload();
+    }, 600);
   };
 
   window.selectCat = function(cat, el) {

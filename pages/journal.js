@@ -154,7 +154,41 @@ safeRender(function() {
     document.body.appendChild(overlay);
   };
 
-  // Expense chart (with fallback for missing echarts)
+  // ── Share Card ──
+  window.generateShareCard = function() {
+    var overlay = document.getElementById('shareOverlay');
+    var card = document.getElementById('shareCard');
+    if (!overlay || !card) return;
+    var dayCount = trip.days instanceof Array ? trip.days.length : 0;
+    var placeCount = trip.days instanceof Array ? trip.days.reduce(function(s, d) { return s + (d.places ? d.places.length : 0); }, 0) : 0;
+    var totalExp = (trip.expenses || []).reduce(function(s, e) { return s + e.amount; }, 0);
+    card.innerHTML =
+      '<div style="font-size:48px;margin-bottom:12px;">' + (trip.emoji || '📖') + '</div>' +
+      '<h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:4px;">' + (trip.name || trip.destination + '之旅') + '</h2>' +
+      '<p style="color:var(--muted-fg);font-size:14px;margin-bottom:20px;">' + (trip.startDate || '') + ' - ' + (trip.endDate || '') + '</p>' +
+      '<div style="display:flex;justify-content:center;gap:24px;margin-bottom:20px;">' +
+        '<div><div style="font-weight:700;font-size:1.2rem;">' + dayCount + '</div><div style="font-size:11px;color:var(--muted-fg);">天</div></div>' +
+        '<div><div style="font-weight:700;font-size:1.2rem;">' + placeCount + '</div><div style="font-size:11px;color:var(--muted-fg);">个地点</div></div>' +
+        '<div><div style="font-weight:700;font-size:1.2rem;">¥' + (totalExp/1000).toFixed(1) + 'k</div><div style="font-size:11px;color:var(--muted-fg);">消费</div></div>' +
+      '</div>' +
+      '<p style="font-size:13px;color:var(--muted-fg);line-height:1.6;font-style:italic;">' + (trip.summary || '一段值得珍藏的旅程') + '</p>' +
+      '<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted-fg);">Made with 💙 Journey</div>';
+    overlay.style.display = 'flex';
+    // Store share text
+    window._shareText = (trip.name || '旅行') + '\n' + (trip.startDate || '') + ' - ' + (trip.endDate || '') + '\n' + dayCount + '天 · ' + placeCount + '个地点 · ¥' + (totalExp/1000).toFixed(1) + 'k消费\n' + (trip.summary || '') + '\n— Made with Journey';
+  };
+
+  window.copyShareCard = function() {
+    if (window._shareText) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window._shareText).then(function() { showToast('已复制到剪贴板', 'success'); });
+      } else {
+        showToast('分享文字已生成', 'info');
+      }
+    }
+  };
+
+  // ── Expense chart (with fallback for missing echarts) ──
   document.addEventListener('DOMContentLoaded', function() {
     var chartDom = document.getElementById('expenseChart');
     if (!chartDom || !tripData.expenseData.length) return;

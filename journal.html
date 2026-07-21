@@ -62,7 +62,11 @@
     <div class="photo-grid" id="photos"></div>
     <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)" style="display:none;">
   </div>
-  <button class="btn btn-primary btn-full btn-lg" style="margin-bottom:16px;" onclick="showToast('分享功能即将上线！', 'info')"><i class="fas fa-share-alt"></i> 分享旅行日志</button>
+  <button class="btn btn-primary btn-full btn-lg" style="margin-bottom:16px;" onclick="generateShareCard()"><i class="fas fa-share-alt"></i> 生成分享卡片</button>
+  <div id="shareOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;" onclick="this.style.display='none'">
+    <div id="shareCard" style="background:#fff;border-radius:var(--radius-xl);padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);" onclick="event.stopPropagation()"></div>
+    <button class="btn btn-primary" onclick="copyShareCard()" style="z-index:201;">📋 复制文字分享</button>
+  </div>
   <p style="text-align:center;font-size:12px;color:var(--muted-fg);">Made with 💙 Journey · Every Journey Deserves to Be Remembered</p>
 </main>
 

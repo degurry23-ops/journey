@@ -2,12 +2,30 @@
 
 safeRender(function() {
   var steps = [
-    { q: 'Hi！准备去哪里旅行？', icon: '🌏', hint: '输入你想去的城市或国家', key: 'destination', placeholder: '例如：日本东京' },
-    { q: '什么时候出发？', icon: '📅', hint: '告诉我出发日期就好', key: 'startDate', placeholder: '选择日期', type: 'date' },
-    { q: '准备玩几天？', icon: '📆', hint: '3天、5天、一周都可以~', key: 'days', placeholder: '例如：5', type: 'number' },
-    { q: '几个人一起呀？', icon: '👥', hint: '算上你自己哦', key: 'members', placeholder: '例如：4', type: 'number' },
-    { q: '预算大概多少？（每人）', icon: '💰', hint: '大概数字就行，不用太精确', key: 'budget', placeholder: '例如：8000', type: 'number' },
-    { q: '最后，有没有特别想体验的？', icon: '🎯', hint: '选几个关键词，AI 帮你安排', key: 'preferences', placeholder: '例如：动漫、美食、购物' }
+    { q: 'Hi！想去哪里<span class=\"gradient-text\" style=\"font-weight:600;\">旅行</span>？', icon: '🌏', hint: '输入目的地或点击下方推荐', key: 'destination', placeholder: '例如：日本东京', suggestions: [
+      { label: '🇯🇵 日本东京', value: '日本东京' },
+      { label: '🇨🇳 四川成都', value: '四川成都' },
+      { label: '🇨🇳 上海', value: '上海' },
+      { label: '🇨🇳 北京', value: '北京' },
+      { label: '🇨🇳 重庆', value: '重庆' },
+      { label: '🇰🇷 韩国首尔', value: '韩国首尔' },
+      { label: '🇹🇭 泰国曼谷', value: '泰国曼谷' },
+      { label: '🇨🇳 云南大理', value: '云南大理' }
+    ]},
+    { q: '什么时候出发？', icon: '📅', hint: '选择出发日期', key: 'startDate', placeholder: '选择日期', type: 'date' },
+    { q: '准备玩几天？', icon: '📆', hint: '点击选择天数', key: 'days', placeholder: '', type: 'chips', chips: ['3天','4天','5天','6天','7天','10天'] },
+    { q: '几个人一起？', icon: '👥', hint: '算上你自己哦', key: 'members', placeholder: '', type: 'chips', chips: ['1人','2人','3人','4人','5人+'] },
+    { q: '每人预算大概多少？', icon: '💰', hint: '点击选择预算档位', key: 'budget', placeholder: '', type: 'chips', chips: ['¥3,000','¥5,000','¥8,000','¥12,000','¥20,000','不限'] },
+    { q: '这次旅行更偏向什么风格？', icon: '🎯', hint: '选择一个风格，AI 帮你定制', key: 'preferences', placeholder: '', type: 'styleChips', chips: [
+      { icon: '🍜', label: '美食探索' },
+      { icon: '🏯', label: '文化古迹' },
+      { icon: '🛍', label: '购物逛街' },
+      { icon: '🌿', label: '自然风光' },
+      { icon: '☕', label: '慢节奏体验' },
+      { icon: '🏃', label: '特种兵打卡' },
+      { icon: '📸', label: '拍照圣地' },
+      { icon: '🎭', label: '当地体验' }
+    ]}
   ];
 
   var step = 0;
@@ -27,26 +45,56 @@ safeRender(function() {
 
   function updateInput() {
     var s = steps[step];
-    answer.type = s.type || 'text';
-    answer.placeholder = s.placeholder;
+    if (s.type === 'chips' || s.type === 'styleChips') {
+      answer.style.display = 'none';
+      sendBtn.parentElement.style.display = 'none';
+      if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 点击选择';
+    } else {
+      answer.style.display = '';
+      sendBtn.parentElement.style.display = '';
+      answer.type = s.type || 'text';
+      answer.placeholder = s.placeholder;
+      if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 按 Enter 发送';
+    }
     if (stepIcon) stepIcon.textContent = s.icon;
-    if (stepHint) stepHint.textContent = '第 ' + (step + 1) + '/' + steps.length + ' 步 · 按 Enter 发送';
     if (progress) progress.style.width = (step / steps.length * 100) + '%';
-    answer.focus();
+    if (answer.style.display !== 'none') answer.focus();
   }
 
-  function addChat(msg, type) {
+  function addChat(msg, type, extras) {
     if (!chat) return;
     var d = document.createElement('div');
     d.className = type === 'ai' ? 'chat-ai' : 'chat-user';
-    if (type === 'ai') {
-      d.innerHTML = '<div class="avatar"><i class="fas fa-robot"></i></div><div class="bubble">' + msg + '</div>';
-    } else {
-      d.innerHTML = '<div class="bubble">' + msg + '</div>';
+    var html = type === 'ai' ? '<div class="avatar"><i class="fas fa-robot"></i></div>' : '';
+    html += '<div class="bubble">' + msg;
+    // Add suggestion chips/cards
+    if (extras && extras.suggestions) {
+      html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">';
+      extras.suggestions.forEach(function(s) {
+        html += '<span onclick="quickPick(\'' + s.value + '\')" style="padding:8px 14px;border-radius:999px;font-size:13px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);">' + s.label + '</span>';
+      });
+      html += '</div>';
     }
+    if (extras && extras.chips) {
+      html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">';
+      extras.chips.forEach(function(c) {
+        var label = typeof c === 'string' ? c : (c.icon + ' ' + c.label);
+        var val = typeof c === 'string' ? c : c.label;
+        html += '<span onclick="quickPick(\'' + val + '\')" style="padding:10px 16px;border-radius:var(--radius);font-size:14px;background:var(--muted);color:var(--fg);cursor:pointer;transition:all .15s;border:1.5px solid var(--border);display:inline-flex;align-items:center;gap:6px;">' + label + '</span>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    d.innerHTML = html;
     chat.appendChild(d);
     chat.scrollTop = chat.scrollHeight;
   }
+
+  window.quickPick = function(val) {
+    if (!answer) return;
+    answer.value = val;
+    send();
+  };
 
   async function send() {
     if (!answer) return;
@@ -55,10 +103,15 @@ safeRender(function() {
     var s = steps[step];
     answers[s.key] = val;
     addChat(val, 'user');
+    answer.value = '';
 
     if (step < steps.length - 1) {
       step++;
-      addChat(steps[step].q, 'ai');
+      var nextS = steps[step];
+      var extras = {};
+      if (nextS.suggestions) extras.suggestions = nextS.suggestions;
+      if (nextS.chips) extras.chips = nextS.chips;
+      addChat(nextS.q, 'ai', extras);
       updateInput();
       answer.value = '';
     } else {
@@ -149,5 +202,10 @@ safeRender(function() {
 
   sendBtn.addEventListener('click', send);
   answer.addEventListener('keydown', function(e) { if (e.key === 'Enter') send(); });
+  // Show destination suggestions on first step
+  var firstS = steps[0];
+  if (firstS.suggestions) {
+    addChat(firstS.q, 'ai', { suggestions: firstS.suggestions });
+  }
   updateInput();
 });
