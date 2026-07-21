@@ -57,13 +57,27 @@ const SAMPLE_TRIPS = [
         ]
       }
     ],
-    expenses: [
-      { id:'e1-1', category:'餐饮', amount:980, note:'一兰拉面', payer:'我', date:'2026-08-02', dayId:'d1-1' },
-      { id:'e1-2', category:'交通', amount:500, note:'Suica充值', payer:'小月', date:'2026-08-02', dayId:'d1-1' },
-      { id:'e1-3', category:'门票', amount:2100, note:'晴空塔', payer:'小林', date:'2026-08-02', dayId:'d1-1' },
-      { id:'e1-4', category:'门票', amount:8900, note:'迪士尼海洋', payer:'我', date:'2026-08-05', dayId:'d1-4' },
-      { id:'e1-5', category:'门票', amount:3200, note:'teamLab', payer:'阿明', date:'2026-08-06', dayId:'d1-5' },
-      { id:'e1-6', category:'交通', amount:1500, note:'镰仓江之电一日券', payer:'小月', date:'2026-08-07', dayId:'d1-6' }
+            expenses: [
+      { id:'e1-1', category:'餐饮', amount:980, note:'一兰拉面', payer:'我', date:'2026-08-02', dayId:'d1-1', currency:'JPY', amountCNY:47, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-2', category:'交通', amount:500, note:'Suica充值', payer:'小月', date:'2026-08-02', dayId:'d1-1', currency:'JPY', amountCNY:24, participants:'["小月"]' },
+      { id:'e1-3', category:'门票', amount:2100, note:'晴空塔', payer:'小林', date:'2026-08-02', dayId:'d1-1', currency:'JPY', amountCNY:100, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-4', category:'住宿', amount:32000, note:'东京酒店(前2晚)', payer:'我', date:'2026-08-02', dayId:'d1-1', currency:'JPY', amountCNY:1536, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-5', category:'餐饮', amount:2000, note:'筑地市场海鲜', payer:'我', date:'2026-08-03', dayId:'d1-2', currency:'JPY', amountCNY:96, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-6', category:'购物', amount:8500, note:'银座购物(药妆)', payer:'阿明', date:'2026-08-03', dayId:'d1-2', currency:'JPY', amountCNY:408, participants:'["阿明"]' },
+      { id:'e1-7', category:'餐饮', amount:800, note:'涩谷甜点', payer:'小月', date:'2026-08-03', dayId:'d1-2', currency:'JPY', amountCNY:38, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-8', category:'餐饮', amount:1200, note:'新宿午餐', payer:'小林', date:'2026-08-04', dayId:'d1-3', currency:'JPY', amountCNY:58, participants:'["小林","阿明"]' },
+      { id:'e1-9', category:'住宿', amount:32000, note:'东京酒店(后2晚)', payer:'我', date:'2026-08-04', dayId:'d1-3', currency:'JPY', amountCNY:1536, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-10', category:'门票', amount:8900, note:'迪士尼海洋', payer:'我', date:'2026-08-05', dayId:'d1-4', currency:'JPY', amountCNY:427, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-11', category:'餐饮', amount:2500, note:'迪士尼午餐', payer:'小月', date:'2026-08-05', dayId:'d1-4', currency:'JPY', amountCNY:120, participants:'["我","小月"]' },
+      { id:'e1-12', category:'门票', amount:3200, note:'teamLab', payer:'阿明', date:'2026-08-06', dayId:'d1-5', currency:'JPY', amountCNY:154, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-13', category:'餐饮', amount:1800, note:'台场晚餐', payer:'小林', date:'2026-08-06', dayId:'d1-5', currency:'JPY', amountCNY:86, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-14', category:'门票', amount:2480, note:'大江户温泉', payer:'小月', date:'2026-08-06', dayId:'d1-5', currency:'JPY', amountCNY:119, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-15', category:'交通', amount:1500, note:'镰仓江之电一日券', payer:'小月', date:'2026-08-07', dayId:'d1-6', currency:'JPY', amountCNY:72, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-16', category:'餐饮', amount:1200, note:'镰仓海鲜饭', payer:'我', date:'2026-08-07', dayId:'d1-6', currency:'JPY', amountCNY:58, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-17', category:'购物', amount:600, note:'江之岛纪念品', payer:'阿明', date:'2026-08-07', dayId:'d1-6', currency:'JPY', amountCNY:29, participants:'["阿明"]' },
+      { id:'e1-18', category:'交通', amount:3000, note:'成田快线', payer:'我', date:'2026-08-08', dayId:'d1-7', currency:'JPY', amountCNY:144, participants:'["我","小月","小林","阿明"]' },
+      { id:'e1-19', category:'餐饮', amount:1000, note:'上野午餐', payer:'小林', date:'2026-08-08', dayId:'d1-7', currency:'JPY', amountCNY:48, participants:'["小林","阿明"]' },
+      { id:'e1-20', category:'购物', amount:5000, note:'阿美横丁手信', payer:'小月', date:'2026-08-08', dayId:'d1-7', currency:'JPY', amountCNY:240, participants:'["小月"]' }
     ]
   },
   {
@@ -106,12 +120,21 @@ const SAMPLE_TRIPS = [
         ]
       }
     ],
-    expenses: [
-      { id:'e2-1', category:'餐饮', amount:450, note:'火锅', payer:'我', date:'2026-07-18', dayId:'d2-1' },
-      { id:'e2-2', category:'门票', amount:55, note:'熊猫基地', payer:'阿明', date:'2026-07-18', dayId:'d2-1' },
-      { id:'e2-3', category:'餐饮', amount:120, note:'蜀大侠火锅', payer:'小林', date:'2026-07-19', dayId:'d2-2' },
-      { id:'e2-4', category:'门票', amount:170, note:'青城山+都江堰', payer:'我', date:'2026-07-21', dayId:'d2-4' },
-      { id:'e2-5', category:'交通', amount:300, note:'租车', payer:'阿明', date:'2026-07-21', dayId:'d2-4' }
+        expenses: [
+      { id:'e2-1', category:'餐饮', amount:450, note:'蜀大侠火锅', payer:'我', date:'2026-07-18', dayId:'d2-1', currency:'CNY', amountCNY:450, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-2', category:'门票', amount:55, note:'熊猫基地', payer:'阿明', date:'2026-07-18', dayId:'d2-1', currency:'CNY', amountCNY:55, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-3', category:'餐饮', amount:80, note:'宽窄巷子小吃', payer:'小月', date:'2026-07-18', dayId:'d2-1', currency:'CNY', amountCNY:80, participants:'["小月"]' },
+      { id:'e2-4', category:'门票', amount:50, note:'武侯祠', payer:'我', date:'2026-07-19', dayId:'d2-2', currency:'CNY', amountCNY:50, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-5', category:'餐饮', amount:120, note:'川菜午餐', payer:'小林', date:'2026-07-19', dayId:'d2-2', currency:'CNY', amountCNY:120, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-6', category:'餐饮', amount:120, note:'蜀大侠火锅(二刷)', payer:'阿明', date:'2026-07-19', dayId:'d2-2', currency:'CNY', amountCNY:120, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-7', category:'餐饮', amount:30, note:'鹤鸣茶社', payer:'我', date:'2026-07-20', dayId:'d2-3', currency:'CNY', amountCNY:30, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-8', category:'餐饮', amount:200, note:'川菜晚餐', payer:'小月', date:'2026-07-20', dayId:'d2-3', currency:'CNY', amountCNY:200, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-9', category:'门票', amount:90, note:'青城山', payer:'我', date:'2026-07-21', dayId:'d2-4', currency:'CNY', amountCNY:90, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-10', category:'门票', amount:80, note:'都江堰', payer:'小林', date:'2026-07-21', dayId:'d2-4', currency:'CNY', amountCNY:80, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-11', category:'交通', amount:300, note:'租车一天', payer:'阿明', date:'2026-07-21', dayId:'d2-4', currency:'CNY', amountCNY:300, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-12', category:'餐饮', amount:150, note:'青城山农家菜', payer:'小月', date:'2026-07-21', dayId:'d2-4', currency:'CNY', amountCNY:150, participants:'["我","阿明","小林","小月"]' },
+      { id:'e2-13', category:'购物', amount:200, note:'特产+火锅底料', payer:'我', date:'2026-07-22', dayId:'d2-5', currency:'CNY', amountCNY:200, participants:'["我"]' },
+      { id:'e2-14', category:'餐饮', amount:100, note:'告别午餐', payer:'小林', date:'2026-07-22', dayId:'d2-5', currency:'CNY', amountCNY:100, participants:'["我","阿明","小林","小月"]' }
     ]
   },
   {
@@ -147,11 +170,19 @@ const SAMPLE_TRIPS = [
         ]
       }
     ],
-    expenses: [
-      { id:'e3-1', category:'餐饮', amount:380, note:'小笼包', payer:'我', date:'2026-05-10', dayId:'d3-1' },
-      { id:'e3-2', category:'门票', amount:40, note:'豫园', payer:'我', date:'2026-05-11', dayId:'d3-2' },
-      { id:'e3-3', category:'门票', amount:475, note:'迪士尼', payer:'我', date:'2026-05-12', dayId:'d3-3' },
-      { id:'e3-4', category:'交通', amount:200, note:'地铁+打车', payer:'小月', date:'2026-05-12', dayId:'d3-3' }
+        expenses: [
+      { id:'e3-1', category:'餐饮', amount:380, note:'南翔小笼包', payer:'我', date:'2026-05-10', dayId:'d3-1', currency:'CNY', amountCNY:380, participants:'["我","小月"]' },
+      { id:'e3-2', category:'购物', amount:150, note:'南京路零食', payer:'小月', date:'2026-05-10', dayId:'d3-1', currency:'CNY', amountCNY:150, participants:'["小月"]' },
+      { id:'e3-3', category:'餐饮', amount:280, note:'外滩夜景晚餐', payer:'我', date:'2026-05-10', dayId:'d3-1', currency:'CNY', amountCNY:280, participants:'["我","小月"]' },
+      { id:'e3-4', category:'门票', amount:40, note:'豫园', payer:'我', date:'2026-05-11', dayId:'d3-2', currency:'CNY', amountCNY:40, participants:'["我","小月"]' },
+      { id:'e3-5', category:'餐饮', amount:120, note:'新天地咖啡', payer:'小月', date:'2026-05-11', dayId:'d3-2', currency:'CNY', amountCNY:120, participants:'["小月"]' },
+      { id:'e3-6', category:'购物', amount:80, note:'田子坊文创', payer:'我', date:'2026-05-11', dayId:'d3-2', currency:'CNY', amountCNY:80, participants:'["我"]' },
+      { id:'e3-7', category:'餐饮', amount:200, note:'本帮菜晚餐', payer:'小月', date:'2026-05-11', dayId:'d3-2', currency:'CNY', amountCNY:200, participants:'["我","小月"]' },
+      { id:'e3-8', category:'门票', amount:475, note:'迪士尼乐园', payer:'我', date:'2026-05-12', dayId:'d3-3', currency:'CNY', amountCNY:475, participants:'["我","小月"]' },
+      { id:'e3-9', category:'餐饮', amount:180, note:'迪士尼午餐', payer:'小月', date:'2026-05-12', dayId:'d3-3', currency:'CNY', amountCNY:180, participants:'["我","小月"]' },
+      { id:'e3-10', category:'交通', amount:200, note:'地铁+打车', payer:'我', date:'2026-05-12', dayId:'d3-3', currency:'CNY', amountCNY:200, participants:'["我","小月"]' },
+      { id:'e3-11', category:'餐饮', amount:60, note:'武康路咖啡', payer:'我', date:'2026-05-13', dayId:'d3-4', currency:'CNY', amountCNY:60, participants:'["我"]' },
+      { id:'e3-12', category:'购物', amount:300, note:'上海特产', payer:'小月', date:'2026-05-13', dayId:'d3-4', currency:'CNY', amountCNY:300, participants:'["小月"]' }
     ]
   },
   {
@@ -180,10 +211,18 @@ const SAMPLE_TRIPS = [
         ]
       }
     ],
-    expenses: [
-      { id:'e4-1', category:'餐饮', amount:220, note:'白族美食', payer:'我', date:'2026-03-05', dayId:'d4-1' },
-      { id:'e4-2', category:'门票', amount:40, note:'苍山索道', payer:'我', date:'2026-03-06', dayId:'d4-2' },
-      { id:'e4-3', category:'交通', amount:150, note:'电动车租赁', payer:'小月', date:'2026-03-05', dayId:'d4-1' }
+        expenses: [
+      { id:'e4-1', category:'交通', amount:150, note:'电动车租赁', payer:'我', date:'2026-03-05', dayId:'d4-1', currency:'CNY', amountCNY:150, participants:'["我","小月"]' },
+      { id:'e4-2', category:'餐饮', amount:120, note:'洱海边午餐', payer:'小月', date:'2026-03-05', dayId:'d4-1', currency:'CNY', amountCNY:120, participants:'["我","小月"]' },
+      { id:'e4-3', category:'餐饮', amount:220, note:'白族美食晚餐', payer:'我', date:'2026-03-05', dayId:'d4-1', currency:'CNY', amountCNY:220, participants:'["我","小月"]' },
+      { id:'e4-4', category:'住宿', amount:380, note:'大理古城民宿', payer:'小月', date:'2026-03-05', dayId:'d4-1', currency:'CNY', amountCNY:380, participants:'["我","小月"]' },
+      { id:'e4-5', category:'门票', amount:40, note:'苍山索道', payer:'我', date:'2026-03-06', dayId:'d4-2', currency:'CNY', amountCNY:40, participants:'["我","小月"]' },
+      { id:'e4-6', category:'餐饮', amount:80, note:'喜洲古镇午餐', payer:'小月', date:'2026-03-06', dayId:'d4-2', currency:'CNY', amountCNY:80, participants:'["我","小月"]' },
+      { id:'e4-7', category:'餐饮', amount:60, note:'喜洲粑粑', payer:'我', date:'2026-03-06', dayId:'d4-2', currency:'CNY', amountCNY:60, participants:'["我"]' },
+      { id:'e4-8', category:'餐饮', amount:150, note:'古城晚餐', payer:'小月', date:'2026-03-06', dayId:'d4-2', currency:'CNY', amountCNY:150, participants:'["我","小月"]' },
+      { id:'e4-9', category:'餐饮', amount:100, note:'双廊午餐', payer:'我', date:'2026-03-07', dayId:'d4-3', currency:'CNY', amountCNY:100, participants:'["我","小月"]' },
+      { id:'e4-10', category:'购物', amount:200, note:'扎染手信', payer:'小月', date:'2026-03-07', dayId:'d4-3', currency:'CNY', amountCNY:200, participants:'["小月"]' },
+      { id:'e4-11', category:'交通', amount:180, note:'机场接送', payer:'我', date:'2026-03-07', dayId:'d4-3', currency:'CNY', amountCNY:180, participants:'["我","小月"]' }
     ]
   }
 ];
@@ -204,7 +243,7 @@ SAMPLE_TRIPS.forEach(trip => {
     });
   });
   (trip.expenses || []).forEach(exp => {
-    db.expenses.insert({ id: exp.id, trip_id: trip.id, category: exp.category, amount: exp.amount, note: exp.note, payer: exp.payer, date: exp.date, day_id: exp.dayId });
+    db.expenses.insert({ id: exp.id, trip_id: trip.id, category: exp.category, amount: exp.amount, note: exp.note, payer: exp.payer, date: exp.date, day_id: exp.dayId, currency: exp.currency || 'CNY', amountCNY: exp.amountCNY || 0, participants: exp.participants || '[]' });
   });
 });
 

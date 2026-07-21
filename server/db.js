@@ -82,6 +82,11 @@ async function initDB() {
     )
   `);
 
+  // Migration: add new columns if they don't exist
+  try { db.run('ALTER TABLE expenses ADD COLUMN currency TEXT DEFAULT \'CNY\''); } catch(e) {}
+  try { db.run('ALTER TABLE expenses ADD COLUMN amountCNY REAL DEFAULT 0'); } catch(e) {}
+  try { db.run('ALTER TABLE expenses ADD COLUMN participants TEXT DEFAULT \'[]\''); } catch(e) {}
+
   db.run(`
     CREATE TABLE IF NOT EXISTS photos (
       id TEXT PRIMARY KEY,
