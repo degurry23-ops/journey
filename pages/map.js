@@ -23,6 +23,25 @@ safeRender(function() {
   var initLng = allPlaces.length > 0 ? allPlaces[0].lng : 139.76;
   var initZoom = allPlaces.length > 0 ? 13 : 5;
 
+  // Empty state: no places with coordinates
+  if (allPlaces.length === 0) {
+    var mapContainer = document.getElementById('map');
+    var filtersContainer = document.getElementById('dayFilters');
+    if (mapContainer) {
+      mapContainer.innerHTML = '<div class=\"empty-state\" style=\"padding-top:100px;\"><i class=\"fas fa-map-pin\"></i><h3>暂无地图数据</h3><p>为地点添加经纬度坐标后即可在地图上展示</p><a href=\"day-timeline.html?trip=' + trip.id + '&day=' + (trip.days[0] || {}).id + '\" class=\"btn btn-primary\">前往日程页</a></div>';
+      mapContainer.style.height = 'auto';
+      mapContainer.style.minHeight = '300px';
+    }
+    if (filtersContainer) filtersContainer.style.display = 'none';
+    // Still set backLink
+    var bl = document.getElementById('backLink');
+    if (bl) {
+      bl.href = 'trip-detail.html?id=' + trip.id;
+      bl.onclick = function(e) { e.preventDefault(); window.location.href = 'trip-detail.html?id=' + trip.id; };
+    }
+    return;
+  }
+
   var map = L.map('map').setView([initLat, initLng], initZoom);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'

@@ -41,13 +41,25 @@ safeRender(function() {
     cd.style.cursor = 'pointer';
   }
 
-  // Stats
+  // Stats with extra info
+  var totalPlaces = trips.reduce(function(s, t) {
+    return s + (t.days instanceof Array ? t.days.reduce(function(ds, d) { return ds + (d.places ? d.places.length : 0); }, 0) : 0);
+  }, 0);
+  var totalExpenses = trips.reduce(function(s, t) {
+    return s + (t.expenses || []).reduce(function(es, e) { return es + e.amount; }, 0);
+  }, 0);
   var statsVals = document.querySelectorAll('.stats-grid .value');
   if (statsVals.length >= 4) {
     statsVals[0].textContent = trips.length;
     statsVals[1].textContent = active.length;
     statsVals[2].textContent = completed.length;
     statsVals[3].textContent = upcoming.length;
+  }
+  // Update stat labels to show extra info
+  var statsLabels = document.querySelectorAll('.stats-grid .label');
+  if (statsLabels.length >= 4) {
+    if (totalExpenses > 0) statsLabels[0].textContent = '次旅行 · ¥' + totalExpenses.toLocaleString();
+    if (totalPlaces > 0) statsLabels[2].textContent = '已完成 · ' + totalPlaces + '个地点';
   }
 
   // Active trips — section index 3 (0:hero, 1:stats, 2:countdown, 3:进行中, 4:即将出发, 5:日志, 6:CTA)

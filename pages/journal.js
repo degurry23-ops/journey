@@ -154,10 +154,14 @@ safeRender(function() {
     document.body.appendChild(overlay);
   };
 
-  // Expense chart
+  // Expense chart (with fallback for missing echarts)
   document.addEventListener('DOMContentLoaded', function() {
     var chartDom = document.getElementById('expenseChart');
     if (!chartDom || !tripData.expenseData.length) return;
+    if (typeof echarts === 'undefined') {
+      chartDom.innerHTML = '<div style=\"text-align:center;padding:20px;color:var(--muted-fg);\">图表加载中...</div>';
+      return;
+    }
     var chart = echarts.init(chartDom);
     chart.setOption({
       tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },

@@ -10,7 +10,7 @@ safeRender(function() {
   var dayIdx = trip.days.findIndex(function(d) { return d.id === dayId; });
   var day = trip.days[dayIdx];
   if (!day) {
-    document.body.innerHTML = '<div class="empty-state" style="padding-top:100px;"><i class="fas fa-calendar"></i><h3>日程不存在</h3><a href="trip-detail.html?id=' + trip.id + '" class="btn btn-primary">返回行程</a></div>';
+    showPageError('fa-calendar', '日程不存在', '该日程可能已被删除或链接无效', 'trip-detail.html?id=' + trip.id, '返回行程');
     return;
   }
 
