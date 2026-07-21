@@ -10,6 +10,13 @@ const tripsRouter = require('./routes/trips');
 const expensesRouter = require('./routes/expenses');
 const photosRouter = require('./routes/photos');
 const aiRouter = require('./routes/ai');
+const { db } = require('./db');
+
+// Auto-seed on first deploy
+if (db.trips.all().length === 0) {
+  console.log('No trips found, seeding sample data...');
+  require('./seed');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
