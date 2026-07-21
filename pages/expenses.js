@@ -28,8 +28,13 @@ safeRender(function() {
     for (var m = 1; m < (trip.members || 1); m++) members.push('成员' + (m + 1));
   }
 
-  var cur = typeof getCurrency === 'function' ? getCurrency(trip.destination) : { sym: '¥', code: 'CNY', rate: 1 };
-  var isForeign = cur.code !== 'CNY';
+  // Detect if trip is foreign by checking expense currencies
+  var hasForeignExpense = expenses.some(function(e) { return e.currency && e.currency !== 'CNY'; });
+  var cur = { sym: '¥', code: 'CNY', rate: 1 };
+  if (hasForeignExpense) {
+    cur = typeof getCurrency === 'function' ? getCurrency(trip.destination) : { sym: '¥', code: 'JPY', rate: 0.048 };
+  }
+  var isForeign = hasForeignExpense;
 
   // Calculate totals in CNY for budget comparison
   var totalCNY = expenses.reduce(function(s, e) { return s + (e.amountCNY || Math.round(e.amount * cur.rate)); }, 0);
