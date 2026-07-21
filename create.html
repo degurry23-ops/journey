@@ -34,11 +34,13 @@
   .suggest-tag { padding: 8px 16px; border-radius: 999px; font-size: 13px; background: var(--muted); border: 1px solid var(--border); cursor: pointer; transition: all .15s; }
   .suggest-tag:hover { border-color: var(--accent); background: rgba(0,82,255,.05); }
   .btn-next { margin-top: 24px; }
+  .result-layout { display: grid; grid-template-columns: 1fr 280px; gap: 20px; align-items: start; }
   @media (max-width: 768px) {
     .wizard-layout { grid-template-columns: 1fr; }
     .preview-panel { display: none !important; }
     .question-card { padding: 28px 20px; }
     .question-card h2 { font-size: 1.4rem; }
+    .result-layout { grid-template-columns: 1fr; }
   }
 </style>
 </head>
