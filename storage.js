@@ -21,7 +21,7 @@ function saveTrips(trips) {
 function getSampleTrips() {
   return [
     {
-      id: 'sample-1', name: '东京之旅', destination: '日本东京',
+      id: 'sample-1', name: '东京之旅', destination: '日本东京', budget: 8000,
       startDate: '2026-08-02', endDate: '2026-08-08', members: 4,
       status: 'planning', readiness: 65,
       emoji: '🇯🇵',
@@ -81,7 +81,7 @@ function getSampleTrips() {
       ]
     },
     {
-      id: 'sample-2', name: '成都之旅', destination: '四川成都',
+      id: 'sample-2', name: '成都之旅', destination: '四川成都', budget: 5000,
       startDate: '2026-07-18', endDate: '2026-07-22', members: 4,
       status: 'traveling', readiness: 85,
       emoji: '🐼',
@@ -129,7 +129,7 @@ function getSampleTrips() {
       ]
     },
     {
-      id: 'sample-3', name: '上海之旅', destination: '上海',
+      id: 'sample-3', name: '上海之旅', destination: '上海', budget: 3000,
       startDate: '2026-05-10', endDate: '2026-05-13', members: 2,
       status: 'completed', readiness: 100,
       emoji: '🌆',
@@ -168,7 +168,7 @@ function getSampleTrips() {
       ]
     },
     {
-      id: 'sample-4', name: '大理之旅', destination: '云南大理',
+      id: 'sample-4', name: '大理之旅', destination: '云南大理', budget: 2500,
       startDate: '2026-03-05', endDate: '2026-03-07', members: 2,
       status: 'completed', readiness: 100,
       emoji: '🏔️',

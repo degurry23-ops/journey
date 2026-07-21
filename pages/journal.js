@@ -102,20 +102,30 @@ safeRender(function() {
   var photosEl = document.getElementById('photos');
   if (photosEl) {
     var photos = tripData.photos || [];
-    var dataUrls = photos.map(function(p) { return p.dataUrl; });
-    var html = '';
-    if (dataUrls.length) {
-      html += dataUrls.map(function(url) {
-        return '<div class="photo-item" onclick="openPhoto(\'' + url + '\')"><img src="' + url + '" alt="photo" loading="lazy"></div>';
-      }).join('');
+    var html = '<div style="margin-bottom:8px;font-size:12px;color:var(--muted-fg);">' + photos.length + ' 张照片</div><div class="photo-grid">';
+    if (photos.length) {
+      photos.forEach(function(p, i) {
+        html += '<div class="photo-item" style="position:relative;" onclick="openPhoto(\'' + p.dataUrl + '\')">' +
+          '<img src="' + p.dataUrl + '" alt="photo" loading="lazy">' +
+          '<span onclick="event.stopPropagation();deleteJournalPhoto(\'' + p.id + '\')" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;">✕</span></div>';
+      });
     } else {
-      ['1508804185872-d7badad00f7d', '1547981609-4b6bfe67ca0b', '1476514525535-07fb3b4ae5f1', '1469854523086-cc02fe5d8800', '1488646953014-85cb44e25828', '1527631746610-bca00a040d60'].forEach(function(id) {
+      ['1508804185872-d7badad00f7d','1547981609-4b6bfe67ca0b','1476514525535-07fb3b4ae5f1','1469854523086-cc02fe5d8800','1488646953014-85cb44e25828','1527631746610-bca00a040d60'].forEach(function(id) {
         html += '<div class="photo-item"><img src="https://images.unsplash.com/photo-' + id + '?w=400&q=80" alt="photo" loading="lazy"></div>';
       });
     }
-    html += '<div class="photo-item" onclick="document.getElementById(\'photoInput\').click()" style="cursor:pointer;background:var(--muted);"><i class="fas fa-plus" style="font-size:24px;color:var(--muted-fg);"></i></div>';
+    html += '<div class="photo-item" onclick="document.getElementById(\'photoInput\').click()" style="cursor:pointer;background:var(--muted);display:flex;flex-direction:column;gap:4px;">' +
+      '<i class="fas fa-plus" style="font-size:24px;color:var(--muted-fg);"></i><span style="font-size:10px;color:var(--muted-fg);">上传</span></div></div>';
     photosEl.innerHTML = html;
   }
+
+  window.deleteJournalPhoto = function(photoId) {
+    showConfirm('确定删除这张照片吗？', function() {
+      deletePhoto(trip.id, photoId);
+      showToast('已删除', 'success');
+      setTimeout(function() { location.reload(); }, 300);
+    });
+  };
 
   window.triggerPhotoUpload = function() {
     var inp = document.getElementById('photoInput');
@@ -125,6 +135,8 @@ safeRender(function() {
   window.handlePhotoUpload = function(input) {
     var file = input.files[0];
     if (!file) return;
+    var btn = document.querySelector('.photo-item[onclick*=\"photoInput\"]');
+    if (btn) btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\" style=\"font-size:20px;color:var(--accent);\"></i>';
     var reader = new FileReader();
     reader.onload = function(e) {
       savePhoto(trip.id, e.target.result);
@@ -136,8 +148,8 @@ safeRender(function() {
 
   window.openPhoto = function(url) {
     var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-    overlay.innerHTML = '<img src="' + url + '" style="max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain;">';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+    overlay.innerHTML = '<span style=\"position:absolute;top:20px;right:24px;color:#fff;font-size:28px;\">✕</span><img src=\"' + url + '\" style=\"max-width:92vw;max-height:92vh;border-radius:8px;object-fit:contain;\">';
     overlay.onclick = function() { overlay.remove(); };
     document.body.appendChild(overlay);
   };

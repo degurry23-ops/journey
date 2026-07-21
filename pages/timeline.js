@@ -67,26 +67,34 @@ safeRender(function() {
     html += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">💰</span><span style="font-size:14px;color:var(--muted-fg);">今日消费</span></div><div style="display:flex;align-items:center;gap:12px;"><span style="font-weight:700;font-size:16px;">¥' + totalExp.toLocaleString() + '</span><a href="expenses.html?trip=' + trip.id + '" class="btn btn-primary btn-sm">+ 记账</a></div></div>';
   }
 
-  // Add place form (hidden)
+  // Add place sheet
   html += '<div id="addForm" class="sheet" style="display:none;"><div class="sheet-handle"></div>';
-  html += '<input class="input" id="placeName" placeholder="地点名称" style="margin-bottom:8px;">';
-  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
-  ['景点', '美食', '咖啡', '购物', '住宿', '交通', '其他'].forEach(function(c) {
-    html += '<span onclick="selectCat(\'' + c + '\', this)" style="padding:5px 12px;border-radius:999px;font-size:12px;background:var(--muted);color:var(--muted-fg);cursor:pointer;">' + (catIcon[c] || '📍') + ' ' + c + '</span>';
+  html += '<h4 style="font-weight:600;margin-bottom:12px;text-align:center;">添加地点</h4>';
+  html += '<input class="input" id="placeName" placeholder="地点名称" style="margin-bottom:10px;font-size:16px;" autocomplete="off">';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;" id="catChips">';
+  ['景点','美食','咖啡','购物','住宿','交通','其他'].forEach(function(c) {
+    html += '<span onclick="selectCat(\'' + c + '\', this)" style="padding:8px 14px;border-radius:999px;font-size:13px;background:var(--muted);color:var(--muted-fg);cursor:pointer;transition:all .15s;">' + (catIcon[c] || '📍') + ' ' + c + '</span>';
   });
   html += '</div><input type="hidden" id="placeCat" value="景点">';
-  html += '<div style="display:flex;gap:8px;margin-bottom:12px;"><input id="placeTime" class="input" placeholder="时间 (09:00)" style="flex:1;"><input id="placeDur" class="input" placeholder="时长 (1h)" style="flex:1;"></div>';
-  html += '<div style="display:flex;gap:8px;"><button onclick="document.getElementById(\'addForm\').style.display=\'none\'" class="btn btn-outline btn-full">取消</button><button onclick="addPlace()" class="btn btn-primary btn-full">添加</button></div></div>';
+  html += '<div style="display:flex;gap:8px;margin-bottom:10px;"><input id="placeTime" class="input" type="time" value="09:00" style="flex:1;"><input id="placeDur" class="input" placeholder="时长 (1h)" style="flex:1;"></div>';
+  html += '<div style="display:flex;gap:8px;"><button onclick="closeAddForm()" class="btn btn-outline btn-full">取消</button><button onclick="addPlace()" class="btn btn-primary btn-full">✓ 添加</button></div></div>';
 
   document.getElementById('content').innerHTML = html;
 
   window.showAddForm = function() {
     var f = document.getElementById('addForm');
-    if (f) f.style.display = 'block';
+    if (f) { f.style.display = 'block'; document.getElementById('placeName').focus(); }
+  };
+
+  window.closeAddForm = function() {
+    var f = document.getElementById('addForm');
+    if (f) f.style.display = 'none';
+    var nameEl = document.getElementById('placeName');
+    if (nameEl) nameEl.value = '';
   };
 
   window.selectCat = function(cat, el) {
-    var btns = document.querySelectorAll('#addForm span[onclick^="selectCat"]');
+    var btns = document.querySelectorAll('#catChips span');
     btns.forEach(function(b) { b.style.background = 'var(--muted)'; b.style.color = 'var(--muted-fg)'; });
     el.style.background = 'var(--accent)'; el.style.color = '#fff';
     var catInput = document.getElementById('placeCat');
@@ -108,12 +116,16 @@ safeRender(function() {
     if (!day.places) day.places = [];
     day.places.push(p);
     saveTrips(loadTrips().map(function(t) { return t.id === trip.id ? trip : t; }));
-    location.reload();
+    showToast('已添加: ' + n, 'success');
+    setTimeout(function() { location.reload(); }, 300);
   };
 
   window.removePlace = function(placeId) {
-    day.places = day.places.filter(function(p) { return p.id !== placeId; });
-    saveTrips(loadTrips().map(function(t) { return t.id === trip.id ? trip : t; }));
-    location.reload();
+    showConfirm('确定删除这个地点吗？', function() {
+      day.places = day.places.filter(function(p) { return p.id !== placeId; });
+      saveTrips(loadTrips().map(function(t) { return t.id === trip.id ? trip : t; }));
+      showToast('已删除', 'success');
+      setTimeout(function() { location.reload(); }, 300);
+    });
   };
 });
