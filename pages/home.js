@@ -8,49 +8,43 @@ safeRender(function() {
   var next = upcoming[0];
   var activeTrip = active[0];
 
-  // ── Hero: AI value-driven ──
+  // ── Hero: AI-first design ──
+  var todayDate = new Date().toISOString().split('T')[0];
   if (next) {
-    var today = new Date().toISOString().split('T')[0];
-    var daysLeft = Math.max(0, daysBetween(today, next.startDate));
+    var daysLeft = Math.max(0, daysBetween(todayDate, next.startDate));
     var dayCount = next.days instanceof Array ? next.days.length : 0;
     var placeCount = next.days instanceof Array ? next.days.reduce(function(s, d) { return s + (d.places ? d.places.length : 0); }, 0) : 0;
     var heroContent = document.getElementById('heroContent');
     if (heroContent) {
       heroContent.innerHTML =
-        '<div class="section-badge"><span class="dot pulse"></span><span class="label">✨ AI 正在陪你准备下一段旅程</span></div>' +
-        '<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:16px;">' +
-          '<span style="font-size:56px;">' + (next.emoji || '🌏') + '</span>' +
-          '<div>' +
-            '<h1 style="font-family:var(--font-display);font-size:clamp(2rem,4vw,2.8rem);line-height:1.15;">' + (next.destination || '') + '<span class="gradient-text"> · ' + dayCount + '日探索</span></h1>' +
-            '<p style="font-size:15px;color:var(--muted-fg);margin-top:6px;">' + next.startDate + ' 出发 · ' + daysLeft + '天后 · 👥 ' + (next.members || 1) + '人同行</p>' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">' +
+          '<div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🤖</div>' +
+          '<div><div style="font-weight:600;font-size:14px;">AI 旅行助手</div><div style="font-size:12px;color:var(--muted-fg);">你的' + (next.destination || '') + '旅行正在完善中</div></div>' +
+        '</div>' +
+        '<h1 style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.2rem);line-height:1.12;margin-bottom:8px;">' + (next.emoji || '🌏') + ' ' + (next.destination || '') + '<span class="gradient-text"> · ' + dayCount + '日</span></h1>' +
+        '<p style="font-size:16px;color:var(--muted-fg);margin-bottom:24px;">' + next.startDate + ' 出发 · ' + daysLeft + '天后 · 👥 ' + (next.members || 1) + '人</p>' +
+        // AI status card
+        '<div style="background:linear-gradient(135deg,#F8FAFC,#F0F4FF);border:1px solid rgba(0,82,255,.1);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:20px;">' +
+          '<div style="font-size:12px;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">AI 已完成</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">' +
+            '<div style="display:flex;align-items:center;gap:6px;font-size:14px;">✓ <span>' + dayCount + '天路线规划</span></div>' +
+            '<div style="display:flex;align-items:center;gap:6px;font-size:14px;">✓ <span>' + placeCount + '个地点推荐</span></div>' +
+            '<div style="display:flex;align-items:center;gap:6px;font-size:14px;">✓ <span>预算方案 ¥' + ((next.budget || 5000) * (next.members || 1) / 1000).toFixed(1) + 'k</span></div>' +
+            '<div style="display:flex;align-items:center;gap:6px;font-size:14px;">✓ <span>行李清单生成</span></div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--accent);display:flex;align-items:center;gap:6px;">' +
+            '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s infinite;"></span>' +
+            '下一步：' + (dayCount < 5 ? '补充每日行程细节' : (next.expenses && next.expenses.length ? '确认出发准备清单' : '添加预算和消费计划')) +
           '</div>' +
         '</div>' +
-        '<div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">' +
-          '<div style="background:rgba(0,82,255,.06);border-radius:var(--radius);padding:14px 16px;">' +
-            '<div style="font-size:12px;color:var(--muted-fg);margin-bottom:2px;">📍 推荐地点</div>' +
-            '<div style="font-weight:700;font-size:1.2rem;">' + placeCount + ' <span style="font-size:12px;color:var(--muted-fg);font-weight:400;">个</span></div>' +
-          '</div>' +
-          '<div style="background:rgba(16,185,129,.06);border-radius:var(--radius);padding:14px 16px;">' +
-            '<div style="font-size:12px;color:var(--muted-fg);margin-bottom:2px;">🗓 每日路线</div>' +
-            '<div style="font-weight:700;font-size:1.2rem;">' + dayCount + ' <span style="font-size:12px;color:var(--muted-fg);font-weight:400;">天已规划</span></div>' +
-          '</div>' +
-          '<div style="background:rgba(245,158,11,.06);border-radius:var(--radius);padding:14px 16px;">' +
-            '<div style="font-size:12px;color:var(--muted-fg);margin-bottom:2px;">💰 预算估算</div>' +
-            '<div style="font-weight:700;font-size:1.2rem;">¥' + ((next.budget || 5000) * (next.members || 1) / 1000).toFixed(1) + 'k</div>' +
-          '</div>' +
-          '<div style="background:rgba(139,92,246,.06);border-radius:var(--radius);padding:14px 16px;">' +
-            '<div style="font-size:12px;color:var(--muted-fg);margin-bottom:2px;">🎒 行李清单</div>' +
-            '<div style="font-weight:700;font-size:1.2rem;">已生成</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">' +
-          '<a href="trip-detail.html?id=' + next.id + '" class="btn btn-primary btn-lg">查看完整旅行计划 <i class="fas fa-arrow-right"></i></a>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<a href="trip-detail.html?id=' + next.id + '" class="btn btn-primary btn-lg">继续优化旅行 <i class="fas fa-arrow-right"></i></a>' +
           '<a href="create.html" class="btn btn-outline btn-lg">规划新旅行</a>' +
         '</div>';
     }
   }
 
-  // ── Active Journey card (enhanced with today's route) ──
+  // ── Active Journey card (action-oriented) ──
   var activeSection = document.getElementById('activeSection');
   if (activeTrip && activeSection) {
     activeSection.style.display = 'block';
@@ -61,19 +55,42 @@ safeRender(function() {
     var mapLink = document.getElementById('activeMapLink');
     var expLink = document.getElementById('activeExpenseLink');
 
-    if (nameEl) nameEl.textContent = activeTrip.name;
+    var dayCount = activeTrip.days instanceof Array ? activeTrip.days.length : 1;
     var todayDay = activeTrip.days instanceof Array ? activeTrip.days[0] : null;
-    var todayPlaces = todayDay && todayDay.places ? todayDay.places.slice(0, 3).map(function(p) { return p.name; }).join(' → ') : '自由探索';
-    if (metaEl) metaEl.innerHTML = '<span style="opacity:.7;">📍 今日路线：</span>' + todayPlaces + '<br><span style="font-size:11px;opacity:.5;">' + (todayDay ? todayDay.weather || '☀️' : '') + ' · ' + (activeTrip.startDate || '') + ' 至今</span>';
+    var places = todayDay && todayDay.places ? todayDay.places : [];
+
+    if (nameEl) nameEl.textContent = activeTrip.name + ' · Day' + dayCount;
     if (emojiEl) emojiEl.textContent = activeTrip.emoji || '✈️';
-    if (tlLink) tlLink.href = 'today.html?trip=' + activeTrip.id;
+
+    // Build time-based route
+    var routeHTML = '';
+    if (places.length) {
+      routeHTML = '<div style="margin-top:16px;position:relative;padding-left:16px;">' +
+        places.map(function(p, i) {
+          return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;">' +
+            '<span style="font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,.5);min-width:44px;">' + (p.time || '09:00') + '</span>' +
+            '<span style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);flex-shrink:0;"></span>' +
+            '<span style="opacity:.85;">' + p.name + '</span>' +
+          '</div>';
+        }).join('') + '</div>';
+    }
+    if (metaEl) metaEl.innerHTML = (todayDay ? '<div style="display:flex;align-items:center;gap:12px;font-size:14px;opacity:.7;"><span>' + (todayDay.weather || '☀️') + '</span></div>' : '') + routeHTML;
+
+    if (tlLink) { tlLink.href = 'today.html?trip=' + activeTrip.id; tlLink.textContent = '📋 今日旅程'; }
     if (mapLink) mapLink.href = 'map.html?trip=' + activeTrip.id;
     if (expLink) expLink.href = 'expenses.html?trip=' + activeTrip.id;
 
-    var card = document.getElementById('activeTripCard');
-    if (card) {
-      card.onclick = function() { location.href = 'today.html?trip=' + activeTrip.id; };
+    // Replace button area with "enter today" CTA
+    var btnArea = activeSection.querySelector('.btn-sm');
+    var btnContainer = activeSection.querySelector('[style*="display:flex;gap:8px;margin-top:20px"]');
+    if (btnContainer) {
+      btnContainer.innerHTML = '<a href="today.html?trip=' + activeTrip.id + '" class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff;">进入今日旅程 →</a>' +
+        '<a href="map.html?trip=' + activeTrip.id + '" class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;">🗺</a>' +
+        '<a href="expenses.html?trip=' + activeTrip.id + '" class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;">💰</a>';
     }
+
+    var card = document.getElementById('activeTripCard');
+    if (card) { card.onclick = function() { location.href = 'today.html?trip=' + activeTrip.id; }; }
   }
 
   // ── Travel Footprint Stats ──
@@ -103,18 +120,19 @@ safeRender(function() {
       memoriesGrid.innerHTML = completed.map(function(t) {
         var bg = destBgs[t.destination] || 'linear-gradient(135deg,#F8FAFC,#F1F5F9)';
         var color = destColors[t.destination] || 'var(--accent)';
-        var summary = t.summary ? (t.summary.length > 50 ? t.summary.slice(0, 50) + '...' : t.summary) : '';
+        var summary = t.summary ? (t.summary.length > 60 ? t.summary.slice(0, 60) + '...' : t.summary) : '';
         var placeCount = t.days instanceof Array ? t.days.reduce(function(s, d) { return s + (d.places ? d.places.length : 0); }, 0) : 0;
+        var photoCount = (loadPhotos(t.id) || []).length;
         return '<a href="journal.html?trip=' + t.id + '" class="memory-card" style="background:' + bg + ';border-radius:var(--radius-lg);padding:0;overflow:hidden;text-decoration:none;color:inherit;display:block;transition:all .25s;cursor:pointer;">' +
           '<div style="padding:24px 20px 16px;">' +
-            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">' +
               '<span style="font-size:36px;">' + (t.emoji || '📖') + '</span>' +
               '<div>' +
                 '<div style="font-weight:700;font-size:16px;">' + t.name + '</div>' +
-                '<div style="font-size:12px;color:var(--muted-fg);">' + (t.startDate || '').slice(0, 7) + ' · ' + placeCount + '个足迹</div>' +
+                '<div style="font-size:12px;color:var(--muted-fg);">' + (t.startDate || '').slice(0, 7) + ' · ' + (placeCount || (t.days instanceof Array ? t.days.length : 0)) + '天' + (photoCount > 0 ? ' · ' + photoCount + '张照片' : '') + '</div>' +
               '</div>' +
             '</div>' +
-            (summary ? '<p style="font-size:12px;color:var(--muted-fg);line-height:1.5;margin-bottom:12px;font-style:italic;">"' + summary + '"</p>' : '') +
+            (summary ? '<p style="font-size:12px;color:var(--muted-fg);line-height:1.5;margin-bottom:10px;">' + summary + '</p>' : '<p style="font-size:12px;color:var(--muted-fg);line-height:1.5;margin-bottom:10px;font-style:italic;">一段值得珍藏的旅程</p>') +
             '<div style="display:flex;gap:4px;flex-wrap:wrap;">' + (t.tags || t.highlights || ['旅行']).slice(0, 3).map(function(tg) {
               return '<span style="font-size:11px;background:rgba(255,255,255,.6);padding:2px 10px;border-radius:999px;color:' + color + ';">' + tg + '</span>';
             }).join('') + '</div>' +
