@@ -244,17 +244,6 @@ const dbAPI = {
       run(`INSERT INTO users (${cols}) VALUES (${vals.map(()=>'?').join(',')})`, vals);
       return user;
     }
-  }
-users: {
-    all: () => all('SELECT * FROM users'),
-    get: (id) => get('SELECT * FROM users WHERE id = ?', [id]),
-    getByUsername: (username) => get('SELECT * FROM users WHERE username = ?', [username]),
-    insert: (user) => {
-      const cols = Object.keys(user).join(',');
-      const vals = Object.values(user);
-      run('INSERT INTO users (' + cols + ') VALUES (' + vals.map(() => '?').join(',') + ')', vals);
-      return user;
-    }
   },
 
   analytics: {
@@ -271,5 +260,6 @@ users: {
       catch(e) { return 0; }
     }
   }
+};
 
 module.exports = { initDB, db: dbAPI, genId, DB_PATH };
