@@ -80,9 +80,9 @@
 </main>
 
 <!-- Phase 2: Chat (hidden initially) -->
-<div id="chatPhase" style="display:none;flex:1;display:none;flex-direction:column;">
+<div id="chatPhase" style="display:none;flex:1;flex-direction:column;">
   <div class="progress-bar" style="border-radius:0;"><div class="progress-fill" id="progress" style="width:0;"></div></div>
-  <main class="container container-form" style="flex:1;padding-top:24px;padding-bottom:120px;" id="chat"></main>
+  <main class="container container-form" style="flex:1;padding-top:24px;padding-bottom:160px;overflow-y:auto;" id="chat"></main>
 </div>
 
 <footer style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:16px 24px;padding-bottom:max(16px,env(safe-area-inset-bottom));z-index:50;" id="chatFooter" class="chat-footer">
