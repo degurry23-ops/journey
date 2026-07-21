@@ -10,6 +10,7 @@ const tripsRouter = require('./routes/trips');
 const expensesRouter = require('./routes/expenses');
 const photosRouter = require('./routes/photos');
 const aiRouter = require('./routes/ai');
+const weatherRouter = require('./routes/weather');
 const { router: authRouter, authMiddleware } = require('./routes/auth');
 const { initDB, db } = require('./db');
 
@@ -28,6 +29,7 @@ app.use('/api/trips', tripsRouter);
 app.use('/api/trips/:tripId/expenses', expensesRouter);
 app.use('/api/trips/:tripId/photos', photosRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/weather', weatherRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
