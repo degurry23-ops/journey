@@ -245,24 +245,66 @@ function daysBetween(a,b) { return Math.ceil((new Date(b)-new Date(a))/86400000)
 function formatMoney(n) { return '¥'+Number(n).toLocaleString(); }
 function genId() { return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7); }
 
-// Currency by destination
+// Currency by destination (fallback rates, updated by live API)
 var CURRENCY_MAP = {
-  '日本东京': { sym: '¥', code: 'JPY', rate: 0.05 },   // 1 JPY ≈ 0.05 CNY
-  '日本':   { sym: '¥', code: 'JPY', rate: 0.05 },
-  '韩国首尔': { sym: '₩', code: 'KRW', rate: 0.005 },  // 1 KRW ≈ 0.005 CNY
-  '韩国':   { sym: '₩', code: 'KRW', rate: 0.005 },
-  '泰国曼谷': { sym: '฿', code: 'THB', rate: 0.2 },    // 1 THB ≈ 0.2 CNY
-  '泰国':   { sym: '฿', code: 'THB', rate: 0.2 }
+  '日本东京': { sym: '¥', code: 'JPY', rate: 0.048 },
+  '日本':   { sym: '¥', code: 'JPY', rate: 0.048 },
+  '韩国首尔': { sym: '₩', code: 'KRW', rate: 0.0053 },
+  '韩国':   { sym: '₩', code: 'KRW', rate: 0.0053 },
+  '泰国曼谷': { sym: '฿', code: 'THB', rate: 0.20 },
+  '泰国':   { sym: '฿', code: 'THB', rate: 0.20 }
 };
+// Live rate cache
+var LIVE_RATES = {};
+var RATES_LOADED = false;
+var RATES_LOADING = false;
+
 function getCurrency(dest) {
   for (var k in CURRENCY_MAP) {
-    if (dest && dest.indexOf(k.replace(/^(日本|韩国|泰国|四川|云南)/,'')) >= 0) return CURRENCY_MAP[k];
+    if (dest && dest.indexOf(k.replace(/^(日本|韩国|泰国|四川|云南)/,'')) >= 0) {
+      var cur = CURRENCY_MAP[k];
+      // Use live rate if available
+      if (LIVE_RATES[cur.code]) cur = { sym: cur.sym, code: cur.code, rate: LIVE_RATES[cur.code] };
+      return cur;
+    }
   }
   return { sym: '¥', code: 'CNY', rate: 1 };
 }
+
+// Fetch live rates from server
+function loadLiveRates() {
+  if (RATES_LOADED || RATES_LOADING) return;
+  RATES_LOADING = true;
+  var API_BASE = window.location.origin;
+  if (API_BASE.indexOf(':8080') >= 0) API_BASE = API_BASE.replace(':8080',':3001');
+  if (!API_BASE.match(/:\d+/)) API_BASE += ':3001';
+
+  fetch(API_BASE + '/api/exchange-rate/all?base=CNY')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.rates) {
+        Object.keys(data.rates).forEach(function(k) {
+          LIVE_RATES[k] = data.rates[k];
+        });
+        RATES_LOADED = true;
+        console.log('Live rates loaded:', LIVE_RATES);
+      }
+    })
+    .catch(function() { console.log('Using fallback rates'); });
+}
+
 function formatAmount(amount, dest) {
   var cur = getCurrency(dest);
   return cur.sym + Number(amount || 0).toLocaleString();
+}
+
+// Load rates on init
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadLiveRates);
+  } else {
+    loadLiveRates();
+  }
 }
 
 // AI mock trip generator
