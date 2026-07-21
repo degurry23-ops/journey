@@ -16,9 +16,10 @@ function renderHeader(currentPage) {
   var token = localStorage.getItem('journey_token');
   try { profile = JSON.parse(localStorage.getItem('journey_user')) || {}; } catch(e) {}
   var isLoggedIn = !!(token && profile.username);
-  var userHTML = isLoggedIn
-    ? '<div style="display:flex;align-items:center;gap:12px;"><a href="settings.html" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--fg);font-size:13px;font-weight:500;"><span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">' + (profile.username || '?')[0] + '</span>' + (profile.username || '') + '</a><a href="#" onclick="doLogout()" style="color:var(--muted-fg);font-size:12px;text-decoration:none;">退出</a></div>'
-    : '<a href="login.html" style="text-decoration:none;color:var(--muted-fg);font-size:13px;font-weight:500;">👤 登录</a>';
+  var userHTML = (isLoggedIn
+    ? '<a href="settings.html" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--fg);font-size:13px;font-weight:500;"><span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">' + (profile.username || '?')[0] + '</span>' + (profile.username || '') + '</a>'
+    : '<a href="login.html" style="text-decoration:none;color:var(--muted-fg);font-size:13px;font-weight:500;">👤 登录</a>')
+    + '<a href="settings.html" style="text-decoration:none;color:var(--muted-fg);font-size:18px;margin-left:8px;" title="设置">⚙</a>';
 
   const navLinks = pages.map(p =>
     `<a href="${p.href}"${p.key === currentPage ? ' class="active"' : ''}>${p.label}</a>`
