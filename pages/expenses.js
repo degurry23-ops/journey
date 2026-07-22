@@ -45,31 +45,12 @@ safeRender(function() {
     cur = { sym: mainCur === 'KRW' ? '₩' : mainCur === 'THB' ? '฿' : '¥', code: mainCur, rate: rates[mainCur] || 0.05 };
   }
 
-  // Detect foreign currency from ACTUAL expense data only
-  var foreignCodes = ['JPY','KRW','THB','USD','EUR'];
-  var expenseCurrencies = expenses.reduce(function(set, e) { if (e.currency) set[e.currency] = true; return set; }, {});
-  var foreignInData = Object.keys(expenseCurrencies).filter(function(c) { return foreignCodes.indexOf(c) >= 0; });
-  var isForeign = foreignInData.length > 0;
-
-  // Currency info: use actual expense currency for foreign, CNY for domestic
-  var cur = { sym: '¥', code: 'CNY', rate: 1 };
-  if (isForeign) {
-    var mainCur = foreignInData[0];
-    if (typeof getCurrency === 'function') {
-      cur = getCurrency(trip.destination);
-    } else {
-      cur = { sym: mainCur === 'JPY' ? '¥' : mainCur === 'KRW' ? '₩' : mainCur === 'THB' ? '฿' : '¥', code: mainCur, rate: 0.05 };
-    }
-  }
-
   var members = trip.memberNames || [];
   if (members.length === 0) {
     members.push('我');
     for (var m = 1; m < (trip.members || 1); m++) members.push('成员' + (m + 1));
   }
 
-  // Calculate totals in CNY for budget comparison
-  var totalCNY = expenses.reduce(function(s, e) { return s + (e.amountCNY || Math.round(e.amount * cur.rate)); }, 0);
   var budgetPerPerson = parseInt(trip.budget) || 0;
   var budgetTotal = budgetPerPerson * (trip.members || 1);
   var budgetUsed = budgetTotal > 0 ? Math.round(totalCNY / budgetTotal * 100) : 0;
@@ -104,8 +85,8 @@ safeRender(function() {
     h += '<div style="background:var(--fg);color:#fff;border-radius:16px;padding:24px;margin-bottom:16px;">';
     h += '<div style="font-size:13px;opacity:.7;">💰 本次旅行花费</div>';
     if (isForeign) {
-      h += '<div style="font-size:2.2rem;font-weight:700;margin:4px 0;">¥' + totalCNY.toLocaleString() + ' <span style="font-size:14px;opacity:.7;">CNY</span></div>';
-      h += '<div style="font-size:14px;opacity:.5;margin-bottom:4px;">≈ ' + cur.sym + expenses.reduce(function(s,e){return s+e.amount;},0).toLocaleString() + ' ' + cur.code + '</div>';
+      h += '<div style="font-size:2.2rem;font-weight:700;margin:4px 0;">' + cur.sym + totalLocal.toLocaleString() + ' <span style="font-size:14px;opacity:.7;">' + cur.code + '</span></div>';
+      h += '<div style="font-size:14px;opacity:.5;margin-bottom:4px;">≈ ¥' + totalCNY.toLocaleString() + ' CNY</div>';
     } else {
       var totalLocal = expenses.reduce(function(s,e){return s+e.amount;},0);
       h += '<div style="font-size:2.5rem;font-weight:700;margin:4px 0;">' + cur.sym + totalLocal.toLocaleString() + ' <span style="font-size:14px;opacity:.7;">CNY</span></div>';
