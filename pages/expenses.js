@@ -28,11 +28,14 @@ safeRender(function() {
     for (var m = 1; m < (trip.members || 1); m++) members.push('成员' + (m + 1));
   }
 
-  // Detect if trip is foreign by checking expense currencies
-  var hasForeignExpense = expenses.some(function(e) { return e.currency && e.currency !== 'CNY'; });
-  var cur = { sym: '¥', code: 'CNY', rate: 1 };
-  if (hasForeignExpense) {
-    cur = typeof getCurrency === 'function' ? getCurrency(trip.destination) : { sym: '¥', code: 'JPY', rate: 0.048 };
+  // Detect if trip is foreign by checking expense currencies in the DATA
+  var foreignCurrencies = ['JPY','KRW','THB','USD','EUR'];
+  var hasForeignExpense = expenses.some(function(e) { return e.currency && foreignCurrencies.indexOf(e.currency) >= 0; });
+  var cur = typeof getCurrency === 'function' ? getCurrency(trip.destination) : { sym: '¥', code: 'CNY', rate: 1 };
+  if (hasForeignExpense && cur.code === 'CNY') {
+    // If expenses are foreign but getCurrency didn't detect it, use the expense currency
+    var foreignExp = expenses.find(function(e) { return e.currency && foreignCurrencies.indexOf(e.currency) >= 0; });
+    if (foreignExp) cur = (typeof getCurrency === 'function' ? getCurrency(trip.destination) : null) || { sym: '¥', code: foreignExp.currency, rate: 0.05 };
   }
   var isForeign = hasForeignExpense;
 
