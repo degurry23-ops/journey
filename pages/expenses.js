@@ -112,7 +112,7 @@ safeRender(function() {
     expenses.forEach(function(e) {
       var c = e.cat || e.category || '其他';
       if (!cats[c]) cats[c] = 0;
-      cats[c] += (e.amountCNY || e.amount);
+      cats[c] += (isForeign ? e.amount : (e.amountCNY || e.amount));
     });
     if (Object.keys(cats).length) {
       h += '<div class="card" style="margin-bottom:16px;"><h3 style="font-size:12px;color:var(--muted-fg);margin-bottom:12px;">消费结构</h3>';
@@ -121,7 +121,7 @@ safeRender(function() {
         var k = entry[0], v = entry[1];
         var pct = Math.round(v/totalCNY*100);
         h += '<div style="margin-bottom:10px;">';
-        h += '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>' + (catDefs[k]||'💰') + ' ' + k + '</span><span style="font-weight:600;">¥' + v.toLocaleString() + ' <span style="font-size:11px;color:var(--muted-fg);font-weight:400;">' + pct + '%</span></span></div>';
+        h += '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>' + (catDefs[k]||'💰') + ' ' + k + '</span><span style="font-weight:600;">' + (isForeign ? cur.sym : '¥') + v.toLocaleString() + ' <span style="font-size:11px;color:var(--muted-fg);font-weight:400;">' + pct + '%</span></span></div>';
         h += '<div style="height:8px;background:var(--muted);border-radius:4px;overflow:hidden;">';
         h += '<div style="height:100%;width:' + Math.max(pct,2) + '%;background:' + (catColors[i%catColors.length]) + ';border-radius:4px;"></div></div></div>';
       });
